@@ -1,3 +1,18 @@
+.molecular-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-header,
+.panel {
+  position: relative;
+  z-index: 1;
+}
+
 .app {
   max-width: 820px;
   width: 100%;

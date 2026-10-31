@@ -7,6 +7,7 @@ import {
 } from './components/FragranceRecommendations'
 import { SkinResults, type Metric } from './components/SkinResults'
 import { UploadCard, type LocalFilePayload } from './components/UploadCard'
+import { MolecularBackground } from './components/MolecularBackground'
 
 const exampleUrl =
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png'
@@ -178,6 +179,7 @@ function App() {
 
   return (
     <main className="app">
+      <MolecularBackground />
       <header className="app-header">
         <p className="eyebrow">DIAMANDIS · SKIN × SCENT</p>
         <h1>Skin-Informed Fragrance Selection</h1>
