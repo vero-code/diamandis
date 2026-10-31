@@ -68,12 +68,42 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 const fragranceCatalog = [
-  { name: 'Citrus Atelier', notes: 'Bergamot · neroli · cedar' },
-  { name: 'Velvet Amber', notes: 'Iris · amber · sandalwood' },
-  { name: 'Quiet Woods', notes: 'Fig · soft musk · vetiver' },
-  { name: 'Marine Mineral', notes: 'Sea salt · sage · driftwood' },
-  { name: 'Botanical Veil', notes: 'White tea · jasmine · cashmere wood' },
-  { name: 'Spiced Resin', notes: 'Cardamom · labdanum · smoked cedar' },
+  {
+    name: 'Citrus Atelier',
+    concentration: 'Eau de Toilette (EDT · 12%)',
+    notes: 'Top: Bergamot, neroli · Base: Dry cedar',
+    prep: 'Unscented Hyaluronic Gel Hydrator',
+  },
+  {
+    name: 'Velvet Amber',
+    concentration: 'Extrait de Parfum (28%)',
+    notes: 'Top: Powdery iris · Base: Labdanum amber, sandalwood',
+    prep: 'Ceramide Lipid Barrier Balm',
+  },
+  {
+    name: 'Quiet Woods',
+    concentration: 'Eau de Parfum (EDP · 18%)',
+    notes: 'Top: Green fig · Base: Soft skin musk, vetiver',
+    prep: 'Squalane Moisture Veil',
+  },
+  {
+    name: 'Marine Mineral',
+    concentration: 'Eau de Toilette (EDT · 14%)',
+    notes: 'Top: Sea salt, clary sage · Base: Mineral driftwood',
+    prep: 'Oil-Balancing Niacinamide Fluid',
+  },
+  {
+    name: 'Botanical Veil',
+    concentration: 'Eau de Parfum (EDP · 20%)',
+    notes: 'Top: White tea, jasmine · Base: Cashmere wood',
+    prep: 'Peptide Barrier Emulsion',
+  },
+  {
+    name: 'Spiced Resin',
+    concentration: 'Extrait de Parfum (30%)',
+    notes: 'Top: Crushed cardamom · Base: Benzoin resin, smoked cedar',
+    prep: 'RichShea & Ceramide Occlusive Primer',
+  },
 ]
 
 const allowedMetricTypes = new Set([
@@ -81,6 +111,7 @@ const allowedMetricTypes = new Set([
   'oiliness',
   'skin_type',
   'texture',
+  'pore',
 ])
 
 app.post('/api/fragrance-recommendations', async (req, res) => {
@@ -142,7 +173,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
                 'Recommend up to 3 fragrances using only the supplied catalog.',
                 'Use the skin metrics and user scent preference only as editorial context.',
                 'Do not make medical claims or claim that skin metrics predict fragrance longevity.',
-                'Return a brief, cautious reason for each selection.',
+                'In each reason, briefly mention both the user scent preference and the reported skin metrics (e.g. skin_type, moisture, oiliness) as editorial context.',
                 `User preference: ${preference || 'No specific preference'}`,
                 `Skin metrics: ${JSON.stringify(metrics)}`,
                 `Catalog: ${JSON.stringify(fragranceCatalog)}`,
@@ -232,7 +263,9 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
 
       return {
         name: fragrance.name,
+        concentration: fragrance.concentration,
         notes: fragrance.notes,
+        prep: fragrance.prep,
         reason: row.reason.trim(),
       }
     })
