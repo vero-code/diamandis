@@ -10,7 +10,13 @@ type SkinResultsProps = {
   metrics: Metric[]
 }
 
-const displayedTypes = new Set(['moisture', 'oiliness', 'texture', 'skin_type'])
+const displayedTypes = new Set([
+  'moisture',
+  'oiliness',
+  'texture',
+  'pore',
+  'skin_type',
+])
 
 export function SkinResults({ metrics }: SkinResultsProps) {
   const filtered = metrics.filter((item) => displayedTypes.has(item.type))
