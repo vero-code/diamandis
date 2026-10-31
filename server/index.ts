@@ -66,6 +66,179 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+const fragranceCatalog = [
+  { name: 'Citrus Atelier', notes: 'Bergamot · neroli · cedar' },
+  { name: 'Velvet Amber', notes: 'Iris · amber · sandalwood' },
+  { name: 'Quiet Woods', notes: 'Fig · soft musk · vetiver' },
+]
+
+const allowedMetricTypes = new Set([
+  'moisture',
+  'oiliness',
+  'skin_type',
+])
+
+app.post('/api/fragrance-recommendations', async (req, res) => {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    res.status(503).json({ error: 'Gemini API key is not configured.' })
+    return
+  }
+
+  if (!Array.isArray(req.body?.metrics) || req.body.metrics.length > 40) {
+    res.status(400).json({ error: 'Provide a valid metrics array.' })
+    return
+  }
+
+  const metrics = req.body.metrics.flatMap((item: unknown) => {
+    if (!isRecord(item) || typeof item.type !== 'string') return []
+    if (!allowedMetricTypes.has(item.type)) return []
+
+    return [{
+      type: item.type,
+      ...(typeof item.ui_score === 'number' &&
+      Number.isFinite(item.ui_score) &&
+      item.ui_score >= 0 &&
+      item.ui_score <= 100
+        ? { ui_score: item.ui_score }
+        : {}),
+      ...(typeof item.skin_type === 'string'
+        ? { skin_type: item.skin_type.slice(0, 40) }
+        : {}),
+      ...(typeof item.region === 'string'
+        ? { region: item.region.slice(0, 20) }
+        : {}),
+    }]
+  })
+
+  if (metrics.length === 0) {
+    res.status(400).json({ error: 'No supported skin metrics were provided.' })
+    return
+  }
+
+  try {
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: [
+                'Recommend up to 3 fragrances using only the supplied catalog.',
+                'Use the skin metrics only as editorial context.',
+                'Do not make medical claims or claim that skin metrics predict fragrance longevity.',
+                'Return a brief, cautious reason for each selection.',
+                `Skin metrics: ${JSON.stringify(metrics)}`,
+                `Catalog: ${JSON.stringify(fragranceCatalog)}`,
+              ].join('\n'),
+            }],
+          }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                recommendations: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      name: { type: 'STRING' },
+                      reason: { type: 'STRING' },
+                    },
+                    required: ['name', 'reason'],
+                  },
+                },
+              },
+              required: ['recommendations'],
+            },
+          },
+        }),
+        signal: AbortSignal.timeout(30_000),
+      },
+    )
+
+    if (!response.ok) {
+      throw new Error(`Gemini request failed with HTTP ${response.status}`)
+    }
+
+    const payload: unknown = await response.json()
+    const candidates =
+      isRecord(payload) && Array.isArray(payload.candidates)
+        ? payload.candidates
+        : []
+    const candidate = isRecord(candidates[0]) ? candidates[0] : null
+    const content = candidate && isRecord(candidate.content)
+      ? candidate.content
+      : null
+    const parts = content && Array.isArray(content.parts)
+      ? content.parts
+      : []
+    const textPart = parts.find(
+      (part) => isRecord(part) && typeof part.text === 'string',
+    )
+    const generatedText = isRecord(textPart) ? textPart.text : null
+
+    if (typeof generatedText !== 'string') {
+      throw new Error('Gemini response did not contain generated JSON.')
+    }
+
+    const generated: unknown = JSON.parse(generatedText)
+    const generatedRows = isRecord(generated)
+      ? generated.recommendations
+      : null
+
+    if (
+      !Array.isArray(generatedRows) ||
+      generatedRows.length === 0 ||
+      generatedRows.length > 3
+    ) {
+      throw new Error('Gemini returned an invalid recommendation list.')
+    }
+
+    const validated = generatedRows.map((row: unknown) => {
+      if (
+        !isRecord(row) ||
+        typeof row.name !== 'string' ||
+        typeof row.reason !== 'string' ||
+        row.reason.trim().length === 0 ||
+        row.reason.length > 300
+      ) {
+        throw new Error('Gemini returned an invalid recommendation.')
+      }
+
+      const fragrance = fragranceCatalog.find(
+        (item) => item.name === row.name,
+      )
+      if (!fragrance) {
+        throw new Error('Gemini returned an unknown fragrance.')
+      }
+
+      return {
+        name: fragrance.name,
+        notes: fragrance.notes,
+        reason: row.reason.trim(),
+      }
+    })
+
+    if (new Set(validated.map((item) => item.name)).size !== validated.length) {
+      throw new Error('Gemini returned duplicate recommendations.')
+    }
+
+    res.json({ recommendations: validated })
+  } catch (error) {
+    console.error('Could not generate fragrance recommendations:', error)
+    res.status(502).json({
+      error: 'Could not generate fragrance recommendations.',
+    })
+  }
+})
+
 app.post('/api/skin-analysis', async (req, res) => {
   const imageUrl = req.body?.src_file_url
 

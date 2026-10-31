@@ -12,71 +12,10 @@ type Metric = {
   region?: string
 }
 
-type Fragrance = {
+type FragranceRecommendation = {
   name: string
   notes: string
-  targetMoisture: number
-  targetOiliness: number
-  skinTypes: string[]
-}
-
-const fragranceCatalog: Fragrance[] = [
-  {
-    name: 'Citrus Atelier',
-    notes: 'Bergamot · neroli · cedar',
-    targetMoisture: 65,
-    targetOiliness: 65,
-    skinTypes: ['Oily'],
-  },
-  {
-    name: 'Velvet Amber',
-    notes: 'Iris · amber · sandalwood',
-    targetMoisture: 45,
-    targetOiliness: 40,
-    skinTypes: ['Dry', 'Combination'],
-  },
-  {
-    name: 'Quiet Woods',
-    notes: 'Fig · soft musk · vetiver',
-    targetMoisture: 55,
-    targetOiliness: 55,
-    skinTypes: [],
-  },
-]
-
-type FragranceRecommendation = Fragrance & {
-  matchScore: number
-}
-
-function getFragranceRecommendations(
-  metrics: Metric[],
-): FragranceRecommendation[] {
-  const moisture = metrics.find((item) => item.type === 'moisture')?.ui_score
-  const oiliness = metrics.find((item) => item.type === 'oiliness')?.ui_score
-  const skinType = metrics.find(
-    (item) => item.type === 'skin_type' && item.region === 'whole',
-  )?.skin_type
-
-  if (moisture === undefined || oiliness === undefined) return []
-
-  return fragranceCatalog
-    .map((fragrance) => {
-      const distance =
-        (Math.abs(moisture - fragrance.targetMoisture) +
-          Math.abs(oiliness - fragrance.targetOiliness)) /
-        2
-      const skinTypeBonus =
-        skinType && fragrance.skinTypes.includes(skinType) ? 10 : 0
-
-      return {
-        ...fragrance,
-        matchScore: Math.min(
-          100,
-          Math.max(0, Math.round(100 - distance + skinTypeBonus)),
-        ),
-      }
-    })
-    .sort((a, b) => b.matchScore - a.matchScore)
+  reason: string
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -104,6 +43,33 @@ function getMetrics(value: unknown): Metric[] {
   })
 }
 
+function getRecommendations(value: unknown): FragranceRecommendation[] {
+  const rows = asRecord(value)?.recommendations
+
+  if (!Array.isArray(rows)) {
+    throw new Error('Gemini response did not include recommendations.')
+  }
+
+  return rows.map((row: unknown) => {
+    const recommendation = asRecord(row)
+
+    if (
+      !recommendation ||
+      typeof recommendation.name !== 'string' ||
+      typeof recommendation.notes !== 'string' ||
+      typeof recommendation.reason !== 'string'
+    ) {
+      throw new Error('Gemini returned an invalid recommendation.')
+    }
+
+    return {
+      name: recommendation.name,
+      notes: recommendation.notes,
+      reason: recommendation.reason,
+    }
+  })
+}
+
 async function readJson(response: Response): Promise<unknown> {
   const data: unknown = await response.json()
   if (!response.ok) {
@@ -122,9 +88,13 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [metrics, setMetrics] = useState<Metric[]>([])
-  const recommendations = getFragranceRecommendations(metrics)
+  const [recommendations, setRecommendations] =
+  useState<FragranceRecommendation[]>([])
+  const [recommendationError, setRecommendationError] = useState('')
 
   async function analyze() {
+    setRecommendations([])
+    setRecommendationError('')
     setLoading(true)
     setMessage('Creating analysis task…')
     setMetrics([])
@@ -153,8 +123,28 @@ function App() {
         const status = statusData?.task_status
 
         if (status === 'success') {
-          setMetrics(getMetrics(statusData))
-          setMessage('Analysis completed')
+          const analysisMetrics = getMetrics(statusData)
+          setMetrics(analysisMetrics)
+          setMessage('Generating fragrance recommendations…')
+
+          try {
+            const response = await fetch('/api/fragrance-recommendations', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ metrics: analysisMetrics }),
+            })
+
+            setRecommendations(getRecommendations(await readJson(response)))
+            setMessage('Analysis completed')
+          } catch (error) {
+            setRecommendationError(
+              error instanceof Error
+                ? error.message
+                : 'Could not generate fragrance recommendations.',
+            )
+            setMessage('Skin analysis completed, but recommendations are unavailable.')
+          }
+
           return
         }
 
@@ -227,12 +217,15 @@ function App() {
               <article className="metric" key={fragrance.name}>
                 <h3>{fragrance.name}</h3>
                 <p>{fragrance.notes}</p>
-                <p>Editorial profile match: {fragrance.matchScore}/100</p>
+                <p>{fragrance.reason}</p>
               </article>
             ))}
           </div>
-
-          <div>Recommendations use a simple editorial heuristic based on API metrics; they are not scientifically validated fragrance-performance predictions.</div>
+          <div>
+            Gemini-generated editorial suggestions based on YouCam metrics. They are
+            not medical advice or scientifically validated fragrance-performance predictions.
+          </div>
+          {recommendationError && <p role="alert">{recommendationError}</p>}
         </section>
       )}
     </main>
