@@ -15,6 +15,7 @@ const displayedTypes = new Set([
   'oiliness',
   'texture',
   'pore',
+  'redness',
   'skin_type',
 ])
 

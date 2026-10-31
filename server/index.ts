@@ -72,37 +72,50 @@ const fragranceCatalog = [
     name: 'Citrus Atelier',
     concentration: 'Eau de Toilette (EDT · 12%)',
     notes: 'Top: Bergamot, neroli · Base: Dry cedar',
-    prep: 'Unscented Hyaluronic Gel Hydrator',
   },
   {
     name: 'Velvet Amber',
     concentration: 'Extrait de Parfum (28%)',
     notes: 'Top: Powdery iris · Base: Labdanum amber, sandalwood',
-    prep: 'Ceramide Lipid Barrier Balm',
   },
   {
     name: 'Quiet Woods',
     concentration: 'Eau de Parfum (EDP · 18%)',
     notes: 'Top: Green fig · Base: Soft skin musk, vetiver',
-    prep: 'Squalane Moisture Veil',
   },
   {
     name: 'Marine Mineral',
     concentration: 'Eau de Toilette (EDT · 14%)',
     notes: 'Top: Sea salt, clary sage · Base: Mineral driftwood',
-    prep: 'Oil-Balancing Niacinamide Fluid',
   },
   {
     name: 'Botanical Veil',
     concentration: 'Eau de Parfum (EDP · 20%)',
     notes: 'Top: White tea, jasmine · Base: Cashmere wood',
-    prep: 'Peptide Barrier Emulsion',
   },
   {
     name: 'Spiced Resin',
     concentration: 'Extrait de Parfum (30%)',
     notes: 'Top: Crushed cardamom · Base: Benzoin resin, smoked cedar',
-    prep: 'RichShea & Ceramide Occlusive Primer',
+  },
+]
+
+const skinPrepCatalog = [
+  {
+    name: 'Ceramide & Squalane Lipid Balm',
+    focus: 'Dry skin or low moisture · Locks in volatile top notes',
+  },
+  {
+    name: 'Oil-Balancing Niacinamide Gel Primer',
+    focus: 'Oily or high-sebum skin · Keeps crisp top notes clean and true',
+  },
+  {
+    name: 'Hyaluronic & Peptide Smoothing Veil',
+    focus: 'Combination skin or uneven texture/pores · Even scent diffusion',
+  },
+  {
+    name: 'Panthenol & Cica Barrier Shield',
+    focus: 'Sensitivity or redness · Alcohol-buffering protective layer',
   },
 ]
 
@@ -112,6 +125,7 @@ const allowedMetricTypes = new Set([
   'skin_type',
   'texture',
   'pore',
+  'redness',
 ])
 
 app.post('/api/fragrance-recommendations', async (req, res) => {
@@ -170,13 +184,20 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
           contents: [{
             parts: [{
               text: [
-                'Recommend up to 3 fragrances using only the supplied catalog.',
-                'Use the skin metrics and user scent preference only as editorial context.',
-                'Do not make medical claims or claim that skin metrics predict fragrance longevity.',
-                'In each reason, briefly mention both the user scent preference and the reported skin metrics (e.g. skin_type, moisture, oiliness) as editorial context.',
-                `User preference: ${preference || 'No specific preference'}`,
+                'You are a perfumery and skincare formulation advisor for Diamandis.',
+                'Analyze the YouCam skin metrics using fragrance chemistry principles:',
+                '- Oily / higher sebum skin naturally retains lipophilic fragrance molecules longer and amplifies heavy base notes (amber, resins, musk), so lighter EDT/EDP concentrations and crisp wood/mineral/tea/fig profiles bloom cleanly without becoming cloying, while pure citrus benefits from an oil-balancing primer.',
+                '- Dry / lower moisture or low-oiliness skin lets volatile top notes evaporate rapidly, so higher concentrations (EDP/Extrait) with fixative base notes (amber, sandalwood, resins, musk) and a lipid-replenishing skin-prep balm help anchor the scent.',
+                '- Texture, pore, and redness scores guide whether a smoothing or soothing barrier primer is needed before applying alcohol-based perfume.',
+                'Tasks:',
+                '1. Write a concise retentionProfile (2 sentences max) explaining how this specific skin profile (citing the actual scores and skin_type) interacts with top/base notes and which perfume concentrations work best on it.',
+                '2. Pick the single best skinPrep from the SkinPrepCatalog based strictly on the skin metrics (NOT the scent preference) and explain why in prepReason.',
+                '3. Recommend 3 fragrances from the FragranceCatalog that best bridge the user scent preference AND this skin retention profile, explaining how each fragrance unfolds on this skin.',
+                'Do not make clinical or medical disease claims.',
+                `User scent preference: ${preference || 'No specific preference'}`,
                 `Skin metrics: ${JSON.stringify(metrics)}`,
-                `Catalog: ${JSON.stringify(fragranceCatalog)}`,
+                `SkinPrepCatalog: ${JSON.stringify(skinPrepCatalog)}`,
+                `FragranceCatalog: ${JSON.stringify(fragranceCatalog)}`,
               ].join('\n'),
             }],
           }],
@@ -185,6 +206,9 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
             responseSchema: {
               type: 'OBJECT',
               properties: {
+                retentionProfile: { type: 'STRING' },
+                skinPrepName: { type: 'STRING' },
+                prepReason: { type: 'STRING' },
                 recommendations: {
                   type: 'ARRAY',
                   items: {
@@ -197,7 +221,12 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
                   },
                 },
               },
-              required: ['recommendations'],
+              required: [
+                'retentionProfile',
+                'skinPrepName',
+                'prepReason',
+                'recommendations',
+              ],
             },
           },
         }),
@@ -231,16 +260,37 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
     }
 
     const generated: unknown = JSON.parse(generatedText)
-    const generatedRows = isRecord(generated)
-      ? generated.recommendations
-      : null
+    if (!isRecord(generated)) {
+      throw new Error('Gemini returned a non-object JSON payload.')
+    }
+
+    const retentionProfile =
+      typeof generated.retentionProfile === 'string'
+        ? generated.retentionProfile.trim().slice(0, 450)
+        : ''
+    const skinPrepName =
+      typeof generated.skinPrepName === 'string'
+        ? generated.skinPrepName.trim()
+        : ''
+    const prepReason =
+      typeof generated.prepReason === 'string'
+        ? generated.prepReason.trim().slice(0, 350)
+        : ''
+
+    const matchedPrep =
+      skinPrepCatalog.find((item) => item.name === skinPrepName) ??
+      skinPrepCatalog[0]
+
+    const generatedRows = generated.recommendations
 
     if (
+      !retentionProfile ||
+      !prepReason ||
       !Array.isArray(generatedRows) ||
       generatedRows.length === 0 ||
       generatedRows.length > 3
     ) {
-      throw new Error('Gemini returned an invalid recommendation list.')
+      throw new Error('Gemini returned an incomplete curation response.')
     }
 
     const validated = generatedRows.map((row: unknown) => {
@@ -249,7 +299,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         typeof row.name !== 'string' ||
         typeof row.reason !== 'string' ||
         row.reason.trim().length === 0 ||
-        row.reason.length > 300
+        row.reason.length > 350
       ) {
         throw new Error('Gemini returned an invalid recommendation.')
       }
@@ -265,7 +315,6 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         name: fragrance.name,
         concentration: fragrance.concentration,
         notes: fragrance.notes,
-        prep: fragrance.prep,
         reason: row.reason.trim(),
       }
     })
@@ -274,7 +323,15 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
       throw new Error('Gemini returned duplicate recommendations.')
     }
 
-    res.json({ recommendations: validated })
+    res.json({
+      retentionProfile,
+      skinPrep: {
+        name: matchedPrep.name,
+        focus: matchedPrep.focus,
+        reason: prepReason,
+      },
+      recommendations: validated,
+    })
   } catch (error) {
     console.error('Could not generate fragrance recommendations:', error)
     res.status(502).json({

@@ -3,7 +3,7 @@ import './App.css'
 import { AnalysisProgress } from './components/AnalysisProgress'
 import {
   FragranceRecommendations,
-  type FragranceRecommendation,
+  type CurationResult,
 } from './components/FragranceRecommendations'
 import { SkinResults, type Metric } from './components/SkinResults'
 import { UploadCard, type LocalFilePayload } from './components/UploadCard'
@@ -37,35 +37,52 @@ function getMetrics(value: unknown): Metric[] {
   })
 }
 
-function getRecommendations(value: unknown): FragranceRecommendation[] {
-  const rows = asRecord(value)?.recommendations
+function getCuration(value: unknown): CurationResult {
+  const root = asRecord(value)
+  const retentionProfile = root?.retentionProfile
+  const skinPrep = asRecord(root?.skinPrep)
+  const rows = root?.recommendations
 
-  if (!Array.isArray(rows)) {
-    throw new Error('Gemini response did not include recommendations.')
+  if (
+    typeof retentionProfile !== 'string' ||
+    !skinPrep ||
+    typeof skinPrep.name !== 'string' ||
+    typeof skinPrep.focus !== 'string' ||
+    typeof skinPrep.reason !== 'string' ||
+    !Array.isArray(rows)
+  ) {
+    throw new Error('Gemini response did not include a valid curation.')
   }
 
-  return rows.map((row: unknown) => {
-    const recommendation = asRecord(row)
-
+  const recommendations = rows.map((row: unknown) => {
+    const item = asRecord(row)
     if (
-      !recommendation ||
-      typeof recommendation.name !== 'string' ||
-      typeof recommendation.concentration !== 'string' ||
-      typeof recommendation.notes !== 'string' ||
-      typeof recommendation.prep !== 'string' ||
-      typeof recommendation.reason !== 'string'
+      !item ||
+      typeof item.name !== 'string' ||
+      typeof item.concentration !== 'string' ||
+      typeof item.notes !== 'string' ||
+      typeof item.reason !== 'string'
     ) {
       throw new Error('Gemini returned an invalid recommendation.')
     }
 
     return {
-      name: recommendation.name,
-      concentration: recommendation.concentration,
-      notes: recommendation.notes,
-      prep: recommendation.prep,
-      reason: recommendation.reason,
+      name: item.name,
+      concentration: item.concentration,
+      notes: item.notes,
+      reason: item.reason,
     }
   })
+
+  return {
+    retentionProfile,
+    skinPrep: {
+      name: skinPrep.name,
+      focus: skinPrep.focus,
+      reason: skinPrep.reason,
+    },
+    recommendations,
+  }
 }
 
 async function readJson(response: Response): Promise<unknown> {
@@ -90,13 +107,11 @@ function App() {
   const [message, setMessage] = useState('')
   const [hasError, setHasError] = useState(false)
   const [metrics, setMetrics] = useState<Metric[]>([])
-  const [recommendations, setRecommendations] = useState<
-    FragranceRecommendation[]
-  >([])
+  const [curation, setCuration] = useState<CurationResult | null>(null)
   const [recommendationError, setRecommendationError] = useState('')
 
   async function analyze() {
-    setRecommendations([])
+    setCuration(null)
     setRecommendationError('')
     setHasError(false)
     setLoading(true)
@@ -149,7 +164,7 @@ function App() {
               }),
             })
 
-            setRecommendations(getRecommendations(await readJson(response)))
+            setCuration(getCuration(await readJson(response)))
             setMessage('Analysis completed.')
           } catch (error) {
             setRecommendationError(
@@ -216,7 +231,7 @@ function App() {
       <SkinResults metrics={metrics} />
 
       <FragranceRecommendations
-        recommendations={recommendations}
+        curation={curation}
         error={recommendationError}
       />
     </main>

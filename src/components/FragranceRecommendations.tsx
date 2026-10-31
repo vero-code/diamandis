@@ -2,46 +2,69 @@ export type FragranceRecommendation = {
   name: string
   concentration: string
   notes: string
-  prep: string
   reason: string
 }
 
-type FragranceRecommendationsProps = {
+export type SkinPrepRecommendation = {
+  name: string
+  focus: string
+  reason: string
+}
+
+export type CurationResult = {
+  retentionProfile: string
+  skinPrep: SkinPrepRecommendation
   recommendations: FragranceRecommendation[]
+}
+
+type FragranceRecommendationsProps = {
+  curation: CurationResult | null
   error: string
 }
 
 export function FragranceRecommendations({
-  recommendations,
+  curation,
   error,
 }: FragranceRecommendationsProps) {
-  if (recommendations.length === 0 && !error) return null
+  if (!curation && !error) return null
 
   return (
     <section className="panel" aria-live="polite">
-      <h2>3. Fragrance & Skin-Prep Curation</h2>
+      <h2>3. Skin Retention Profile & Fragrance Curation</h2>
       <p className="note">
-        Editorial selections matching your YouCam skin profile and scent
-        preference with fragrance concentration, note structure, and unscented
-        skin-prep layering.
+        Formulation heuristic based on your YouCam skin metrics and scent
+        preference. For cosmetic and fragrance shopping guidance only, not a
+        medical diagnosis.
       </p>
 
       {error && <p role="alert" className="error-text">{error}</p>}
 
-      {recommendations.length > 0 && (
-        <div className="metrics">
-          {recommendations.map((fragrance) => (
-            <article className="metric" key={fragrance.name}>
-              <h3>{fragrance.name}</h3>
-              <p className="notes">{fragrance.concentration}</p>
-              <p>{fragrance.notes}</p>
-              <p>{fragrance.reason}</p>
-              <p className="note">
-                <strong>Skin-prep layering:</strong> {fragrance.prep}
-              </p>
-            </article>
-          ))}
-        </div>
+      {curation && (
+        <>
+          <article className="metric">
+            <p className="notes">Skin Scent Retention Profile</p>
+            <p>{curation.retentionProfile}</p>
+          </article>
+
+          <article className="metric">
+            <p className="notes">Step 1 · Skin-Prep Layering Base (Matched to Skin Metrics)</p>
+            <h3>{curation.skinPrep.name}</h3>
+            <p className="note">{curation.skinPrep.focus}</p>
+            <p>{curation.skinPrep.reason}</p>
+          </article>
+
+          <p className="notes">Step 2 · Curated Perfumes (Matched to Skin Chemistry & Taste)</p>
+          <div className="metrics">
+            {curation.recommendations.map((fragrance) => (
+              <article className="metric" key={fragrance.name}>
+                <h3>{fragrance.name}</h3>
+                <p className="notes">{fragrance.concentration}</p>
+                <p>{fragrance.notes}</p>
+                <p>{fragrance.reason}</p>
+              </article>
+            ))}
+          </div>
+        </>
       )}
     </section>
   )
