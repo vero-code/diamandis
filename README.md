@@ -1,75 +1,41 @@
-# React + TypeScript + Vite
+# Diamandis · Skin-Informed Fragrance Selection
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Diamandis connects facial skin diagnostics from the **Perfect Corp. YouCam Skin Analysis API** with editorial fragrance curation powered by **Google Gemini**.
 
-Currently, two official plugins are available:
+## How It Works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. **Photo Input & Consent:** Upload a local portrait photo (JPG/PNG via the YouCam S2S v2.0 File API) or provide a public HTTPS image URL, and select a preferred scent profile.
+2. **YouCam Skin Analysis (`v2.1`):** The Express server creates an asynchronous task at `/s2s/v2.1/task/skin-analysis` and polls for completion, extracting `moisture`, `oiliness`, `texture`, and regional `skin_type` (`whole`, `t_zone`, `u_zone`).
+3. **Editorial Fragrance Curation:** The backend passes the returned skin metrics and user scent preference to Gemini to select up to 3 fragrances from the Diamandis catalog with transparent, non-medical explanations.
 
-## React Compiler
+> **Disclaimer:** Skin metrics and fragrance suggestions are provided for editorial and shopping reference only. They are not medical diagnoses and do not scientifically measure or guarantee fragrance longevity.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+
+- A Perfect Corp. YouCam API key (`PERFECTCORP_API_KEY`)
+- A Google Gemini API key (`GEMINI_API_KEY`)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup & Running Locally
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Create `server/.env` from `server/.env.example` and fill in your keys:
+   ```env
+   PERFECTCORP_API_KEY=your_youcam_api_key
+   PORT=3001
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Start the backend server (runs on `http://localhost:3001`):
+   ```bash
+   npm run server
+   ```
 
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+4. In a second terminal, start the Vite frontend (runs on `http://localhost:5173`):
+   ```bash
+   npm run dev
+   ```
