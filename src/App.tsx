@@ -231,6 +231,8 @@ function App() {
               </article>
             ))}
           </div>
+
+          <div>Recommendations use a simple editorial heuristic based on API metrics; they are not scientifically validated fragrance-performance predictions.</div>
         </section>
       )}
     </main>
