@@ -183,7 +183,7 @@ export function SkinResults({ metrics }: SkinResultsProps) {
   return (
     <section className="panel" aria-live="polite">
       <div className="section-title-row">
-        <h2>2. YouCam Skin Metrics</h2>
+        <h2>YouCam Skin Metrics</h2>
         {typeof overallScore === 'number' && (
           <span className="overall-badge">
             Overall Skin Score: {Math.round(overallScore)} / 100

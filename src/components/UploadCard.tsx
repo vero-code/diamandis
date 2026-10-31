@@ -71,7 +71,7 @@ export function UploadCard({
 
   return (
     <section className="panel">
-      <h2>1. Photo & Preferences</h2>
+      <h2>Photo & Preferences</h2>
 
       <div className="field">
         <label htmlFor="local-file">Upload a photo from your computer (JPG or PNG)</label>
