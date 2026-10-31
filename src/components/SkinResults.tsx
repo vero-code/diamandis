@@ -14,7 +14,7 @@ type SkinResultsProps = {
   metrics: Metric[]
 }
 
-const displayedTypes = new Set([
+const displayedTypes = [
   'moisture',
   'oiliness',
   'texture',
@@ -22,7 +22,7 @@ const displayedTypes = new Set([
   'radiance',
   'redness',
   'skin_type',
-])
+]
 
 function getMetricInsight(metric: Metric): {
   title: string
@@ -155,8 +155,17 @@ function getMetricInsight(metric: Metric): {
 }
 
 export function SkinResults({ metrics }: SkinResultsProps) {
-  const filtered = metrics.filter((item) => displayedTypes.has(item.type))
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const filtered = metrics
+    .filter((item) => displayedTypes.includes(item.type))
+    .sort((a, b) => displayedTypes.indexOf(a.type) - displayedTypes.indexOf(b.type))
+
+  // Prefer oiliness or the first metric with a mask_url so a visible mask shows immediately
+  const defaultIndex = Math.max(
+    0,
+    filtered.findIndex((item) => item.type === 'oiliness' && item.mask_url),
+  )
+
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [showMask, setShowMask] = useState(true)
 
   if (filtered.length === 0) return null
@@ -164,8 +173,11 @@ export function SkinResults({ metrics }: SkinResultsProps) {
   const overallScore = metrics.find((item) => item.type === 'all')?.score
   const baseImageUrl = metrics.find((item) => item.type === 'resize_image')?.mask_url
 
-  const safeIndex = selectedIndex < filtered.length ? selectedIndex : 0
-  const activeMetric = filtered[safeIndex]
+  const activeIndex =
+    selectedIndex !== null && selectedIndex < filtered.length
+      ? selectedIndex
+      : defaultIndex
+  const activeMetric = filtered[activeIndex]
   const insight = getMetricInsight(activeMetric)
 
   return (
@@ -180,13 +192,13 @@ export function SkinResults({ metrics }: SkinResultsProps) {
       </div>
 
       <p className="note">
-        Click any metric below to inspect its YouCam AI zone mask on your photo
-        and see how it shapes fragrance evaporation and longevity.
+        Click any metric card below to switch the YouCam AI zone mask on your
+        portrait and see how it shapes fragrance evaporation and longevity.
       </p>
 
       <div className="metrics">
         {filtered.map((item, index) => {
-          const isActive = index === safeIndex
+          const isActive = index === activeIndex
           return (
             <button
               type="button"
@@ -200,7 +212,7 @@ export function SkinResults({ metrics }: SkinResultsProps) {
                   {item.region ? ` · ${item.region.replaceAll('_', ' ')}` : ''}
                 </h3>
                 <span className="metric-badge">
-                  {item.mask_url ? 'Mask + Info' : 'Info'}
+                  {item.mask_url ? '👁 View' : 'Info'}
                 </span>
               </div>
               {item.skin_type && (
@@ -220,26 +232,28 @@ export function SkinResults({ metrics }: SkinResultsProps) {
             <div className="mask-column">
               <div className="mask-stage">
                 <img
-                  src={
-                    showMask && activeMetric.mask_url
-                      ? activeMetric.mask_url
-                      : (baseImageUrl ?? activeMetric.mask_url)
-                  }
-                  alt={`${activeMetric.type} diagnostic view`}
+                  src={baseImageUrl ?? activeMetric.mask_url}
+                  alt="YouCam analyzed portrait"
                   className="mask-base-img"
                   referrerPolicy="no-referrer"
                 />
                 {showMask &&
-                  baseImageUrl &&
                   activeMetric.mask_url &&
                   activeMetric.mask_url !== baseImageUrl && (
                     <img
                       src={activeMetric.mask_url}
-                      alt=""
+                      alt={`${activeMetric.type} diagnostic mask`}
                       className="mask-overlay-img"
                       referrerPolicy="no-referrer"
                     />
                   )}
+                {showMask && (
+                  <div className="mask-hint-overlay">
+                    <span className="mask-hint-sub">
+                      ↑ Click any metric card to switch
+                    </span>
+                  </div>
+                )}
               </div>
               {activeMetric.mask_url && baseImageUrl && (
                 <button

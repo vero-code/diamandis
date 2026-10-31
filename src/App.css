@@ -313,6 +313,39 @@
   pointer-events: none;
 }
 
+.mask-hint-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(11, 59, 44, 0.92) 0%,
+    rgba(11, 59, 44, 0.72) 70%,
+    transparent 100%
+  );
+  color: #fbf9f5;
+  padding: 18px 8px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+.mask-hint-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--gold-bright);
+}
+
+.mask-hint-sub {
+  font-size: 10px;
+  opacity: 0.92;
+}
+
 .panel button.mask-toggle-btn {
   align-self: stretch;
   font-size: 11px;
