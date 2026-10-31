@@ -86,25 +86,46 @@ function getMetricInsight(metric: Metric): {
 
     case 'skin_type': {
       const kind = (metric.skin_type ?? 'Normal').toLowerCase()
-      const zone = metric.region ? ` (${metric.region.replaceAll('_', ' ')})` : ''
+      const region = metric.region ?? 'whole'
+
+      let physics =
+        'Your overall epidermal lipid-to-water ratio is the primary biological factor behind perfume longevity and note balance.'
+      if (region === 't_zone') {
+        physics =
+          'The T-Zone (forehead and nose bridge) has the highest density of sebaceous glands and facial warmth, driving how strongly you perceive your own scent cloud.'
+      } else if (region === 'u_zone') {
+        physics =
+          'The U-Zone (jawline and lower cheeks) directly borders the neck and behind-the-ear pulse points where fragrance is applied — its lipid level dictates real wear time on the neck.'
+      }
+
       let reading =
         'Balanced lipid and water levels allow both fresh EDTs and richer EDPs to develop true to the perfumer’s formula.'
 
       if (kind.includes('oily')) {
-        reading =
-          'Oily skin acts as a natural fixative that holds scent longer and intensifies deep base notes (amber, sandalwood, musk), but can sour delicate citrus unless balanced with a lightweight gel primer. Fresh EDT and EDP concentrations shine here.'
+        if (region === 't_zone') {
+          reading =
+            'An Oily T-Zone generates extra warmth and sebum in the center of the face, which can make heavy sweet or resinous scents feel overwhelming — crisp EDT/EDP profiles stay much fresher.'
+        } else if (region === 'u_zone') {
+          reading =
+            'An Oily U-Zone means the skin along your jawline and neck pulse points is rich in natural lipids, locking in base notes for hours while benefiting from an oil-balancing primer to keep citrus clean.'
+        } else {
+          reading =
+            'Whole-face Oily skin acts as a natural fixative that holds scent longer and intensifies deep base notes, making fresh woody, marine, and botanical EDT/EDP concentrations ideal.'
+        }
       } else if (kind.includes('dry')) {
-        reading =
-          'Dry skin lacks the lipid film needed to hold volatile molecules, so top notes fade quickly. Choose richer EDP or Extrait de Parfum (20–30%) with resinous/woody bases and layer over a ceramide or squalane balm.'
-      } else if (kind.includes('combination')) {
-        reading =
-          'Combination skin retains scent differently across zones. Prepping dry pulse points with a moisture veil ensures consistent longevity and projection.'
+        if (region === 'u_zone') {
+          reading =
+            'A Dry U-Zone means pulse points near the jawline and neck lack surface lipids, causing top notes to fade fast. Prep neck pulse points with a ceramide balm and choose EDP or Extrait.'
+        } else {
+          reading =
+            'Dry skin lacks the lipid film needed to trap volatile molecules. Higher oil concentrations (EDP/Extrait) and a lipid-replenishing primer will anchor the scent.'
+        }
       }
 
+      const zoneLabel = region.replaceAll('_', ' ')
       return {
-        title: `Skin Type${zone}: ${metric.skin_type ?? 'Normal'}`,
-        physics:
-          'Your overall and regional skin classification determines the lipid-to-water ratio on the epidermis — the primary biological factor behind perfume longevity and note balance.',
+        title: `Skin Type (${zoneLabel}): ${metric.skin_type ?? 'Normal'}`,
+        physics,
         reading,
       }
     }
