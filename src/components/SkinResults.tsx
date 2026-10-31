@@ -4,8 +4,10 @@ export type Metric = {
   type: string
   ui_score?: number
   raw_score?: number
+  score?: number
   skin_type?: string
   region?: string
+  mask_url?: string
 }
 
 type SkinResultsProps = {
@@ -17,6 +19,7 @@ const displayedTypes = new Set([
   'oiliness',
   'texture',
   'pore',
+  'radiance',
   'redness',
   'skin_type',
 ])
@@ -73,15 +76,26 @@ function getMetricInsight(metric: Metric): {
             : `Your pore score is ${score}/100, indicating a refined surface distribution that gives balanced, close-to-skin scent projection.`,
       }
 
+    case 'radiance':
+      return {
+        title: 'Radiance (Hydrolipidic Film & Scent Projection)',
+        physics:
+          'Skin radiance reflects the continuity of your outer hydrolipidic film. A luminous, intact surface keeps aromatic molecules suspended on the skin rather than sinking in, boosting the sillage (trail) of floral, citrus, and white-tea heart notes.',
+        reading:
+          score < 70
+            ? `Your radiance score is ${score}/100. Layering a lightweight squalane or peptide emulsion before applying perfume will restore surface luminosity and help radiant top notes project further.`
+            : `Your radiance score is ${score}/100. Your healthy surface reflectivity supports vibrant top-and-heart note projection without muting delicate accords.`,
+      }
+
     case 'redness':
       return {
         title: 'Redness (Barrier Sensitivity & Reactivity)',
         physics:
-          'Reactive or redness-prone skin can be irritated by high alcohol content (common in splashes and EDTs) or warming spice molecules (cardamom, cinnamon, clove).',
+          'In YouCam API, a high redness score (near 100) indicates a calm barrier, while a lower score indicates sensitivity. Reactive skin can be irritated by high alcohol content in EDTs or warming spice molecules (cardamom, cinnamon).',
         reading:
           score < 70
             ? `Your redness score is ${score}/100 (higher sensitivity). Apply a soothing panthenol or ceramide barrier shield first and favor gentle musks, woods, or lower-alcohol Extrait formulas.`
-            : `Your redness score is ${score}/100 (calm skin barrier). Your skin tolerates both crisp alcohol-based EDTs and spiced resinous Extraits well.`,
+            : `Your redness score is ${score}/100 (calm, resilient skin barrier). Your skin comfortably tolerates both crisp alcohol-based EDTs and spiced resinous Extraits.`,
       }
 
     case 'skin_type': {
@@ -143,8 +157,12 @@ function getMetricInsight(metric: Metric): {
 export function SkinResults({ metrics }: SkinResultsProps) {
   const filtered = metrics.filter((item) => displayedTypes.has(item.type))
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [showMask, setShowMask] = useState(true)
 
   if (filtered.length === 0) return null
+
+  const overallScore = metrics.find((item) => item.type === 'all')?.score
+  const baseImageUrl = metrics.find((item) => item.type === 'resize_image')?.mask_url
 
   const safeIndex = selectedIndex < filtered.length ? selectedIndex : 0
   const activeMetric = filtered[safeIndex]
@@ -152,10 +170,18 @@ export function SkinResults({ metrics }: SkinResultsProps) {
 
   return (
     <section className="panel" aria-live="polite">
-      <h2>2. YouCam Skin Metrics</h2>
+      <div className="section-title-row">
+        <h2>2. YouCam Skin Metrics</h2>
+        {typeof overallScore === 'number' && (
+          <span className="overall-badge">
+            Overall Skin Score: {Math.round(overallScore)} / 100
+          </span>
+        )}
+      </div>
+
       <p className="note">
-        Click any metric below to see how it influences fragrance evaporation,
-        note balance, and longevity on your skin.
+        Click any metric below to inspect its YouCam AI zone mask on your photo
+        and see how it shapes fragrance evaporation and longevity.
       </p>
 
       <div className="metrics">
@@ -169,13 +195,16 @@ export function SkinResults({ metrics }: SkinResultsProps) {
               onClick={() => setSelectedIndex(index)}
             >
               <div className="metric-header">
-                <h3>{item.type.replaceAll('_', ' ')}</h3>
-                <span className="metric-badge">Why it matters</span>
+                <h3>
+                  {item.type.replaceAll('_', ' ')}
+                  {item.region ? ` · ${item.region.replaceAll('_', ' ')}` : ''}
+                </h3>
+                <span className="metric-badge">
+                  {item.mask_url ? 'Mask + Info' : 'Info'}
+                </span>
               </div>
               {item.skin_type && (
-                <p className="metric-value">
-                  {item.skin_type} {item.region ? `(${item.region})` : ''}
-                </p>
+                <p className="metric-value">{item.skin_type}</p>
               )}
               {typeof item.ui_score === 'number' && (
                 <p className="metric-value">Score: {item.ui_score} / 100</p>
@@ -186,13 +215,54 @@ export function SkinResults({ metrics }: SkinResultsProps) {
       </div>
 
       <article className="metric insight-box">
-        <p className="notes">Olfactory Physics · {insight.title}</p>
-        <p>
-          <strong>Why this metric matters:</strong> {insight.physics}
-        </p>
-        <p>
-          <strong>What your reading means:</strong> {insight.reading}
-        </p>
+        <div className="insight-layout">
+          {(baseImageUrl || activeMetric.mask_url) && (
+            <div className="mask-column">
+              <div className="mask-stage">
+                <img
+                  src={
+                    showMask && activeMetric.mask_url
+                      ? activeMetric.mask_url
+                      : (baseImageUrl ?? activeMetric.mask_url)
+                  }
+                  alt={`${activeMetric.type} diagnostic view`}
+                  className="mask-base-img"
+                  referrerPolicy="no-referrer"
+                />
+                {showMask &&
+                  baseImageUrl &&
+                  activeMetric.mask_url &&
+                  activeMetric.mask_url !== baseImageUrl && (
+                    <img
+                      src={activeMetric.mask_url}
+                      alt=""
+                      className="mask-overlay-img"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+              </div>
+              {activeMetric.mask_url && baseImageUrl && (
+                <button
+                  type="button"
+                  className="mask-toggle-btn"
+                  onClick={() => setShowMask((prev) => !prev)}
+                >
+                  {showMask ? 'Hide AI Mask Overlay' : 'Show AI Mask Overlay'}
+                </button>
+              )}
+            </div>
+          )}
+
+          <div className="insight-text">
+            <p className="notes">Olfactory Physics · {insight.title}</p>
+            <p>
+              <strong>Why this metric matters:</strong> {insight.physics}
+            </p>
+            <p>
+              <strong>What your reading means:</strong> {insight.reading}
+            </p>
+          </div>
+        </div>
       </article>
     </section>
   )

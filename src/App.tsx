@@ -27,12 +27,18 @@ function getMetrics(value: unknown): Metric[] {
     const row = asRecord(item)
     if (!row || typeof row.type !== 'string') return []
 
+    const maskUrls = Array.isArray(row.mask_urls) ? row.mask_urls : []
+    const firstMask =
+      typeof maskUrls[0] === 'string' ? maskUrls[0] : undefined
+
     return [{
       type: row.type,
       ...(typeof row.ui_score === 'number' ? { ui_score: row.ui_score } : {}),
       ...(typeof row.raw_score === 'number' ? { raw_score: row.raw_score } : {}),
+      ...(typeof row.score === 'number' ? { score: row.score } : {}),
       ...(typeof row.skin_type === 'string' ? { skin_type: row.skin_type } : {}),
       ...(typeof row.region === 'string' ? { region: row.region } : {}),
+      ...(firstMask ? { mask_url: firstMask } : {}),
     }]
   })
 }
