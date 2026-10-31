@@ -50,7 +50,9 @@ function getRecommendations(value: unknown): FragranceRecommendation[] {
     if (
       !recommendation ||
       typeof recommendation.name !== 'string' ||
+      typeof recommendation.concentration !== 'string' ||
       typeof recommendation.notes !== 'string' ||
+      typeof recommendation.prep !== 'string' ||
       typeof recommendation.reason !== 'string'
     ) {
       throw new Error('Gemini returned an invalid recommendation.')
@@ -58,7 +60,9 @@ function getRecommendations(value: unknown): FragranceRecommendation[] {
 
     return {
       name: recommendation.name,
+      concentration: recommendation.concentration,
       notes: recommendation.notes,
+      prep: recommendation.prep,
       reason: recommendation.reason,
     }
   })
