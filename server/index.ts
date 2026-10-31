@@ -4,9 +4,9 @@ import express from 'express'
 config({ path: 'server/.env' })
 
 function getApiKey(): string {
-  const key = process.env.PERFECTCORP_API_KEY
+  const key = process.env.PERFECTCORP_API_KEY?.trim()
   if (!key) throw new Error('PERFECTCORP_API_KEY is missing from server/.env')
-  return key
+  return key.startsWith('Bearer ') ? key : `Bearer ${key}`
 }
 
 const app = express()
@@ -70,12 +70,16 @@ const fragranceCatalog = [
   { name: 'Citrus Atelier', notes: 'Bergamot · neroli · cedar' },
   { name: 'Velvet Amber', notes: 'Iris · amber · sandalwood' },
   { name: 'Quiet Woods', notes: 'Fig · soft musk · vetiver' },
+  { name: 'Marine Mineral', notes: 'Sea salt · sage · driftwood' },
+  { name: 'Botanical Veil', notes: 'White tea · jasmine · cashmere wood' },
+  { name: 'Spiced Resin', notes: 'Cardamom · labdanum · smoked cedar' },
 ]
 
 const allowedMetricTypes = new Set([
   'moisture',
   'oiliness',
   'skin_type',
+  'texture',
 ])
 
 app.post('/api/fragrance-recommendations', async (req, res) => {
@@ -116,6 +120,11 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
     return
   }
 
+  const preference =
+    typeof req.body?.preference === 'string'
+      ? req.body.preference.trim().slice(0, 120)
+      : ''
+
   try {
     const response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
@@ -130,9 +139,10 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
             parts: [{
               text: [
                 'Recommend up to 3 fragrances using only the supplied catalog.',
-                'Use the skin metrics only as editorial context.',
+                'Use the skin metrics and user scent preference only as editorial context.',
                 'Do not make medical claims or claim that skin metrics predict fragrance longevity.',
                 'Return a brief, cautious reason for each selection.',
+                `User preference: ${preference || 'No specific preference'}`,
                 `Skin metrics: ${JSON.stringify(metrics)}`,
                 `Catalog: ${JSON.stringify(fragranceCatalog)}`,
               ].join('\n'),
