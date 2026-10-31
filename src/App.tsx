@@ -12,6 +12,73 @@ type Metric = {
   region?: string
 }
 
+type Fragrance = {
+  name: string
+  notes: string
+  targetMoisture: number
+  targetOiliness: number
+  skinTypes: string[]
+}
+
+const fragranceCatalog: Fragrance[] = [
+  {
+    name: 'Citrus Atelier',
+    notes: 'Bergamot · neroli · cedar',
+    targetMoisture: 65,
+    targetOiliness: 65,
+    skinTypes: ['Oily'],
+  },
+  {
+    name: 'Velvet Amber',
+    notes: 'Iris · amber · sandalwood',
+    targetMoisture: 45,
+    targetOiliness: 40,
+    skinTypes: ['Dry', 'Combination'],
+  },
+  {
+    name: 'Quiet Woods',
+    notes: 'Fig · soft musk · vetiver',
+    targetMoisture: 55,
+    targetOiliness: 55,
+    skinTypes: [],
+  },
+]
+
+type FragranceRecommendation = Fragrance & {
+  matchScore: number
+}
+
+function getFragranceRecommendations(
+  metrics: Metric[],
+): FragranceRecommendation[] {
+  const moisture = metrics.find((item) => item.type === 'moisture')?.ui_score
+  const oiliness = metrics.find((item) => item.type === 'oiliness')?.ui_score
+  const skinType = metrics.find(
+    (item) => item.type === 'skin_type' && item.region === 'whole',
+  )?.skin_type
+
+  if (moisture === undefined || oiliness === undefined) return []
+
+  return fragranceCatalog
+    .map((fragrance) => {
+      const distance =
+        (Math.abs(moisture - fragrance.targetMoisture) +
+          Math.abs(oiliness - fragrance.targetOiliness)) /
+        2
+      const skinTypeBonus =
+        skinType && fragrance.skinTypes.includes(skinType) ? 10 : 0
+
+      return {
+        ...fragrance,
+        matchScore: Math.min(
+          100,
+          Math.max(0, Math.round(100 - distance + skinTypeBonus)),
+        ),
+      }
+    })
+    .sort((a, b) => b.matchScore - a.matchScore)
+}
+
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
     ? (value as Record<string, unknown>)
@@ -55,6 +122,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [metrics, setMetrics] = useState<Metric[]>([])
+  const recommendations = getFragranceRecommendations(metrics)
 
   async function analyze() {
     setLoading(true)
@@ -142,6 +210,26 @@ function App() {
                   {typeof item.ui_score === 'number' && <p>Score: {item.ui_score}</p>}
                 </article>
               ))}
+          </div>
+        </section>
+      )}
+
+      {recommendations.length > 0 && (
+        <section className="panel" aria-live="polite">
+          <h2>Fragrance edit</h2>
+          <p>
+            Editorial suggestions based on your YouCam profile. This is not a
+            prediction of fragrance longevity or a medical recommendation.
+          </p>
+
+          <div className="metrics">
+            {recommendations.map((fragrance) => (
+              <article className="metric" key={fragrance.name}>
+                <h3>{fragrance.name}</h3>
+                <p>{fragrance.notes}</p>
+                <p>Editorial profile match: {fragrance.matchScore}/100</p>
+              </article>
+            ))}
           </div>
         </section>
       )}
