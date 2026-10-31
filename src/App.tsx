@@ -1,22 +1,15 @@
 import { useState } from 'react'
 import './App.css'
+import { AnalysisProgress } from './components/AnalysisProgress'
+import {
+  FragranceRecommendations,
+  type FragranceRecommendation,
+} from './components/FragranceRecommendations'
+import { SkinResults, type Metric } from './components/SkinResults'
+import { UploadCard } from './components/UploadCard'
 
 const exampleUrl =
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png'
-
-type Metric = {
-  type: string
-  ui_score?: number
-  raw_score?: number
-  skin_type?: string
-  region?: string
-}
-
-type FragranceRecommendation = {
-  name: string
-  notes: string
-  reason: string
-}
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
@@ -85,16 +78,21 @@ function wait(ms: number) {
 
 function App() {
   const [imageUrl, setImageUrl] = useState(exampleUrl)
+  const [preference, setPreference] = useState('Fresh citrus and neroli')
+  const [consent, setConsent] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [hasError, setHasError] = useState(false)
   const [metrics, setMetrics] = useState<Metric[]>([])
-  const [recommendations, setRecommendations] =
-  useState<FragranceRecommendation[]>([])
+  const [recommendations, setRecommendations] = useState<
+    FragranceRecommendation[]
+  >([])
   const [recommendationError, setRecommendationError] = useState('')
 
   async function analyze() {
     setRecommendations([])
     setRecommendationError('')
+    setHasError(false)
     setLoading(true)
     setMessage('Creating analysis task…')
     setMetrics([])
@@ -131,31 +129,39 @@ function App() {
             const response = await fetch('/api/fragrance-recommendations', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ metrics: analysisMetrics }),
+              body: JSON.stringify({
+                metrics: analysisMetrics,
+                preference,
+              }),
             })
 
             setRecommendations(getRecommendations(await readJson(response)))
-            setMessage('Analysis completed')
+            setMessage('Analysis completed.')
           } catch (error) {
             setRecommendationError(
               error instanceof Error
                 ? error.message
                 : 'Could not generate fragrance recommendations.',
             )
-            setMessage('Skin analysis completed, but recommendations are unavailable.')
+            setMessage(
+              'Skin analysis completed, but recommendations are unavailable.',
+            )
           }
 
           return
         }
 
         if (status === 'error') {
-          throw new Error('YouCam could not process the image')
+          throw new Error('YouCam could not process the image.')
         }
       }
 
-      throw new Error('Timeout exceeded. Please check the task later.')
+      throw new Error('Timeout exceeded. Please try again later.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Failed to execute analysis')
+      setHasError(true)
+      setMessage(
+        error instanceof Error ? error.message : 'Failed to execute analysis.',
+      )
     } finally {
       setLoading(false)
     }
@@ -163,71 +169,39 @@ function App() {
 
   return (
     <main className="app">
-      <header>
+      <header className="app-header">
         <p className="eyebrow">DIAMANDIS · SKIN × SCENT</p>
-        <h1>Find the fragrance your skin wears best.</h1>
-        <p>Start with a YouCam skin analysis, then explore personalized recommendations.</p>
+        <h1>Skin-Informed Fragrance Selection</h1>
+        <p>
+          Analyze facial skin metrics via YouCam API and receive editorial
+          fragrance suggestions from our catalog.
+        </p>
       </header>
 
-      <section className="panel">
-        <label htmlFor="image-url">Public HTTPS URL of the photo</label>
-        <input
-          id="image-url"
-          type="url"
-          value={imageUrl}
-          onChange={(event) => setImageUrl(event.target.value)}
-          placeholder="https://example.com/photo.jpg"
-        />
-        <button disabled={loading || !imageUrl.startsWith('https://')} onClick={analyze}>
-          {loading ? 'Analyzing…' : 'Analyze my skin'}
-        </button>
-        {message && <p role="status">{message}</p>}
-      </section>
+      <UploadCard
+        imageUrl={imageUrl}
+        preference={preference}
+        consent={consent}
+        loading={loading}
+        onImageUrlChange={setImageUrl}
+        onPreferenceChange={setPreference}
+        onConsentChange={setConsent}
+        onAnalyze={analyze}
+      />
 
-      {metrics.length > 0 && (
-        <section className="panel" aria-live="polite">
-          <h2>Skin analysis</h2>
-          <p>API metrics — a guide for recommendations, not a medical diagnosis.</p>
-          <div className="metrics">
-            {metrics
-              .filter((item) =>
-                ['moisture', 'oiliness', 'skin_type'].includes(item.type),
-              )
-              .map((item, index) => (
-                <article className="metric" key={`${item.type}-${item.region ?? index}`}>
-                  <h3>{item.type.replaceAll('_', ' ')}</h3>
-                  {item.skin_type && <p>{item.skin_type} · {item.region}</p>}
-                  {typeof item.ui_score === 'number' && <p>Score: {item.ui_score}</p>}
-                </article>
-              ))}
-          </div>
-        </section>
-      )}
+      <AnalysisProgress
+        loading={loading}
+        message={message}
+        hasError={hasError}
+        onRetry={analyze}
+      />
 
-      {recommendations.length > 0 && (
-        <section className="panel" aria-live="polite">
-          <h2>Fragrance edit</h2>
-          <p>
-            Editorial suggestions based on your YouCam profile. This is not a
-            prediction of fragrance longevity or a medical recommendation.
-          </p>
+      <SkinResults metrics={metrics} />
 
-          <div className="metrics">
-            {recommendations.map((fragrance) => (
-              <article className="metric" key={fragrance.name}>
-                <h3>{fragrance.name}</h3>
-                <p>{fragrance.notes}</p>
-                <p>{fragrance.reason}</p>
-              </article>
-            ))}
-          </div>
-          <div>
-            Gemini-generated editorial suggestions based on YouCam metrics. They are
-            not medical advice or scientifically validated fragrance-performance predictions.
-          </div>
-          {recommendationError && <p role="alert">{recommendationError}</p>}
-        </section>
-      )}
+      <FragranceRecommendations
+        recommendations={recommendations}
+        error={recommendationError}
+      />
     </main>
   )
 }
