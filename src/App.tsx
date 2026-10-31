@@ -6,7 +6,7 @@ import {
   type FragranceRecommendation,
 } from './components/FragranceRecommendations'
 import { SkinResults, type Metric } from './components/SkinResults'
-import { UploadCard } from './components/UploadCard'
+import { UploadCard, type LocalFilePayload } from './components/UploadCard'
 
 const exampleUrl =
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png'
@@ -78,6 +78,7 @@ function wait(ms: number) {
 
 function App() {
   const [imageUrl, setImageUrl] = useState(exampleUrl)
+  const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
   const [preference, setPreference] = useState('Fresh citrus and neroli')
   const [consent, setConsent] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -101,7 +102,15 @@ function App() {
       const startResponse = await fetch('/api/skin-analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ src_file_url: imageUrl }),
+        body: JSON.stringify(
+          localFile
+            ? {
+                file_name: localFile.fileName,
+                content_type: localFile.contentType,
+                file_data: localFile.dataUrl,
+              }
+            : { src_file_url: imageUrl },
+        ),
       })
 
       const startData = asRecord(await readJson(startResponse))
@@ -180,10 +189,12 @@ function App() {
 
       <UploadCard
         imageUrl={imageUrl}
+        localFile={localFile}
         preference={preference}
         consent={consent}
         loading={loading}
         onImageUrlChange={setImageUrl}
+        onLocalFileChange={setLocalFile}
         onPreferenceChange={setPreference}
         onConsentChange={setConsent}
         onAnalyze={analyze}

@@ -10,12 +10,13 @@ function getApiKey(): string {
 }
 
 const app = express()
-app.use(express.json({ limit: '1mb' }))
+app.use(express.json({ limit: '15mb' }))
 
 const port = Number(process.env.PORT ?? 3001)
 const baseUrl =
   'https://yce-api-01.makeupar.com/s2s/v2.1/task/skin-analysis'
-
+const fileApiUrl =
+  'https://yce-api-01.makeupar.com/s2s/v2.0/file/skin-analysis'
 const dstActions = [
   'acne',
   'dark_circle_v2',
@@ -249,21 +250,109 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
   }
 })
 
-app.post('/api/skin-analysis', async (req, res) => {
-  const imageUrl = req.body?.src_file_url
+async function uploadToYouCam(
+  fileName: string,
+  contentType: string,
+  bytes: Uint8Array<ArrayBuffer>,
+): Promise<string> {
+  const payload = await callYouCam(fileApiUrl, 'POST', {
+    files: [
+      {
+        file_name: fileName,
+        file_size: bytes.byteLength,
+        content_type: contentType,
+      },
+    ],
+  })
 
-  if (typeof imageUrl !== 'string' || !imageUrl.startsWith('https://')) {
-    res.status(400).json({ error: 'Provide an HTTPS image URL in src_file_url.' })
-    return
+  const data = isRecord(payload) && isRecord(payload.data) ? payload.data : null
+  const files = Array.isArray(data?.files) ? data.files : []
+  const fileEntry = isRecord(files[0]) ? files[0] : null
+  const fileId = fileEntry?.file_id
+
+  const rawReq = Array.isArray(fileEntry?.requests)
+    ? fileEntry.requests[0]
+    : fileEntry?.requests
+  const uploadReq = isRecord(rawReq) ? rawReq : null
+  const uploadUrl = uploadReq?.url
+
+  if (typeof fileId !== 'string' || typeof uploadUrl !== 'string') {
+    throw new Error('YouCam File API did not return file_id and upload url')
   }
 
+  const putHeaders: Record<string, string> = {
+    'Content-Type': contentType,
+    'Content-Length': String(bytes.byteLength),
+  }
+
+  if (isRecord(uploadReq?.headers)) {
+    for (const [k, v] of Object.entries(uploadReq.headers)) {
+      if (typeof v === 'string' || typeof v === 'number') {
+        putHeaders[k] = String(v)
+      }
+    }
+  }
+
+  const putRes = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: putHeaders,
+    body: bytes,
+    signal: AbortSignal.timeout(30_000),
+  })
+
+  if (!putRes.ok) {
+    throw new Error(`YouCam S3 upload failed (HTTP ${putRes.status})`)
+  }
+
+  return fileId
+}
+
+app.post('/api/skin-analysis', async (req, res) => {
+  const imageUrl = req.body?.src_file_url
+  const fileData = req.body?.file_data
+  const fileName = req.body?.file_name
+  const contentType = req.body?.content_type
+
   try {
+    let sourceField: { src_file_id: string } | { src_file_url: string }
+
+    if (typeof fileData === 'string' && fileData.length > 0) {
+      const normalizedType =
+        contentType === 'image/png' ? 'image/png' : 'image/jpeg'
+      const safeName =
+        typeof fileName === 'string' && fileName.trim().length > 0
+          ? fileName.trim().slice(0, 80)
+          : normalizedType === 'image/png'
+            ? 'upload.png'
+            : 'upload.jpg'
+
+      const base64Clean = fileData.includes(',')
+        ? fileData.split(',')[1]
+        : fileData
+      const bytes = new Uint8Array(Buffer.from(base64Clean, 'base64'))
+
+      if (bytes.byteLength === 0 || bytes.byteLength > 10 * 1024 * 1024) {
+        res.status(400).json({ error: 'File size must be under 10 MB.' })
+        return
+      }
+
+      const fileId = await uploadToYouCam(safeName, normalizedType, bytes)
+      sourceField = { src_file_id: fileId }
+    } else if (typeof imageUrl === 'string' && imageUrl.startsWith('https://')) {
+      sourceField = { src_file_url: imageUrl }
+    } else {
+      res.status(400).json({
+        error: 'Provide an uploaded image or an HTTPS image URL.',
+      })
+      return
+    }
+
     const payload = await callYouCam(baseUrl, 'POST', {
       dst_actions: dstActions,
       miniserver_args: { enable_mask_overlay: false },
       format: 'json',
       pf_camera_kit: false,
-      src_file_url: imageUrl,
+      ...sourceField,
     })
 
     const data = isRecord(payload) && isRecord(payload.data) ? payload.data : null
