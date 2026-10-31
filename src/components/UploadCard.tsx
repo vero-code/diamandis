@@ -132,7 +132,9 @@ export function UploadCard({
           onChange={(e) => onConsentChange(e.target.checked)}
         />
         <span>
-          I consent to process this photo via the YouCam Skin Analysis API.
+          I consent to process this photo via the YouCam Skin Analysis API and
+          agree to the <a href="#/terms">Terms of Use</a> and{' '}
+          <a href="#/privacy">Privacy Policy</a>.
         </span>
       </label>
 

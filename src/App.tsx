@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { AnalysisProgress } from './components/AnalysisProgress'
 import {
@@ -8,6 +8,7 @@ import {
 import { SkinResults, type Metric } from './components/SkinResults'
 import { UploadCard, type LocalFilePayload } from './components/UploadCard'
 import { MolecularBackground } from './components/MolecularBackground'
+import { LegalPage } from './components/LegalPage'
 
 const exampleUrl =
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png'
@@ -104,6 +105,14 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+type Page = 'home' | 'privacy' | 'terms'
+
+function getPage(): Page {
+  if (window.location.hash === '#/privacy') return 'privacy'
+  if (window.location.hash === '#/terms') return 'terms'
+  return 'home'
+}
+
 function App() {
   const [imageUrl, setImageUrl] = useState(exampleUrl)
   const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
@@ -115,6 +124,17 @@ function App() {
   const [metrics, setMetrics] = useState<Metric[]>([])
   const [curation, setCuration] = useState<CurationResult | null>(null)
   const [recommendationError, setRecommendationError] = useState('')
+  const [page, setPage] = useState<Page>(getPage)
+
+  // Sync page with URL hash
+  useEffect(() => {
+    const onHashChange = () => {
+      setPage(getPage())
+      window.scrollTo(0, 0)
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
 
   async function analyze() {
     setCuration(null)
@@ -213,93 +233,97 @@ function App() {
         </p>
       </header>
 
-      <div className="workspace-grid">
-        <div className="workspace-left">
-          <UploadCard
-            imageUrl={imageUrl}
-            localFile={localFile}
-            preference={preference}
-            consent={consent}
-            loading={loading}
-            onImageUrlChange={setImageUrl}
-            onLocalFileChange={setLocalFile}
-            onPreferenceChange={setPreference}
-            onConsentChange={setConsent}
-            onAnalyze={analyze}
-          />
+      {page !== 'home' ? (
+        <LegalPage page={page} />
+      ) : (
+        <div className="workspace-grid">
+          <div className="workspace-left">
+            <UploadCard
+              imageUrl={imageUrl}
+              localFile={localFile}
+              preference={preference}
+              consent={consent}
+              loading={loading}
+              onImageUrlChange={setImageUrl}
+              onLocalFileChange={setLocalFile}
+              onPreferenceChange={setPreference}
+              onConsentChange={setConsent}
+              onAnalyze={analyze}
+            />
 
-          <AnalysisProgress
-            loading={loading}
-            message={message}
-            hasError={hasError}
-            onRetry={analyze}
-          />
+            <AnalysisProgress
+              loading={loading}
+              message={message}
+              hasError={hasError}
+              onRetry={analyze}
+            />
+          </div>
+
+          <div className="workspace-right">
+            {metrics.length === 0 && !curation && !recommendationError ? (
+              <section className="panel empty-state-panel">
+                <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
+                <h2>How Skin Chemistry Shapes Scent</h2>
+                <p className="note">
+                  Run the analysis on the left to inspect your YouCam AI zone
+                  masks and receive a personalized fragrance curation.
+                </p>
+                <div className="metrics">
+                  <article className="metric">
+                    <p className="notes">Step 01 · YouCam AI</p>
+                    <h3>Epidermal Diagnostics</h3>
+                    <p>
+                      Measures oiliness, moisture, pores, texture, radiance,
+                      redness, and facial zones (T-Zone &amp; U-Zone) with
+                      visual overlay masks.
+                    </p>
+                  </article>
+                  <article className="metric">
+                    <p className="notes">Step 02 · Skin-Prep Base</p>
+                    <h3>Barrier &amp; Lipid Primer</h3>
+                    <p>
+                      Matches an unscented skincare primer to balance surface
+                      sebum or lock in hydration on your pulse points.
+                    </p>
+                  </article>
+                  <article className="metric">
+                    <p className="notes">Step 03 · Gemini Curation</p>
+                    <h3>Perfume Concentration &amp; Notes</h3>
+                    <p>
+                      Selects three fragrances (EDT, EDP, or Extrait) and explains
+                      how their top and base notes bloom and last on your skin.
+                    </p>
+                  </article>
+                </div>
+              </section>
+            ) : (
+              <>
+                <SkinResults metrics={metrics} />
+
+                <FragranceRecommendations
+                  curation={curation}
+                  error={recommendationError}
+                />
+              </>
+            )}
+          </div>
         </div>
-
-        <div className="workspace-right">
-          {metrics.length === 0 && !curation && !recommendationError ? (
-            <section className="panel empty-state-panel">
-              <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
-              <h2>How Skin Chemistry Shapes Scent</h2>
-              <p className="note">
-                Run the analysis on the left to inspect your YouCam AI zone
-                masks and receive a personalized fragrance curation.
-              </p>
-              <div className="metrics">
-                <article className="metric">
-                  <p className="notes">Step 01 · YouCam AI</p>
-                  <h3>Epidermal Diagnostics</h3>
-                  <p>
-                    Measures oiliness, moisture, pores, texture, radiance,
-                    redness, and facial zones (T-Zone &amp; U-Zone) with
-                    visual overlay masks.
-                  </p>
-                </article>
-                <article className="metric">
-                  <p className="notes">Step 02 · Skin-Prep Base</p>
-                  <h3>Barrier &amp; Lipid Primer</h3>
-                  <p>
-                    Matches an unscented skincare primer to balance surface
-                    sebum or lock in hydration on your pulse points.
-                  </p>
-                </article>
-                <article className="metric">
-                  <p className="notes">Step 03 · Gemini Curation</p>
-                  <h3>Perfume Concentration &amp; Notes</h3>
-                  <p>
-                    Selects three fragrances (EDT, EDP, or Extrait) and explains
-                    how their top and base notes bloom and last on your skin.
-                  </p>
-                </article>
-              </div>
-            </section>
-          ) : (
-            <>
-              <SkinResults metrics={metrics} />
-
-              <FragranceRecommendations
-                curation={curation}
-                error={recommendationError}
-              />
-            </>
-          )}
-        </div>
-      </div>
+      )}
 
       <footer className="app-footer">
         <p>
-          <strong>DIAMANDIS</strong> · Skin-Informed Fragrance Selection ·
-          Powered by Perfect Corp. YouCam API &amp; Google Gemini
-        </p>
-        <p>
-          Created by <strong>Veronika Kashtanova</strong> ·{' '}
+          © {new Date().getFullYear()} <strong>DIAMANDIS</strong> · Created by 
           <a
             href="https://github.com/vero-code/diamandis"
             target="_blank"
             rel="noreferrer"
           >
-            github.com/vero-code/diamandis
-          </a>
+            {' '} Veronika Kashtanova
+            </a>
+        </p>
+        <p>
+          <a href="#/privacy">Privacy Policy</a> ·{' '}
+          <a href="#/terms">Terms of Use</a>
         </p>
       </footer>
     </main>
