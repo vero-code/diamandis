@@ -54,23 +54,45 @@ function PrivacyPolicy() {
 
       <h2>4. Storage &amp; Retention</h2>
       <p>
-        Diamandis does not store your photo or results in a database or on
-        disk. Results exist only in your browser session and are cleared when
-        you reload or close the page. Third-party providers may process and
-        temporarily retain data under their own policies.
+        Diamandis does not store your photo or results in its own database or
+        on disk. Results exist only in your browser session and are cleared
+        when you reload or close the page.
+      </p>
+      <p>
+        Per the Perfect Corp. YouCam API retention policy, uploaded source
+        files (<code>file_id</code>) and task records (<code>task_id</code>)
+        are retained by Perfect Corp. for up to <strong>30 days</strong> before
+        automatic deletion, while signed diagnostic mask URLs expire after{' '}
+        <strong>2 hours</strong>.
       </p>
 
       <h2>5. Third-Party Services</h2>
       <ul>
         <li>
           Perfect Corp. YouCam API —{' '}
-          <a href="https://www.perfectcorp.com/business/privacy" target="_blank" rel="noreferrer">
-            Perfect Corp. Privacy Policy
+          <a
+            href="https://www.makeupar.com/perfectbeauty/youcam/privacy-policy-api"
+            target="_blank"
+            rel="noreferrer"
+          >
+            YouCam API Privacy Policy
+          </a>{' '}
+          &amp;{' '}
+          <a
+            href="https://www.makeupar.com/perfectbeauty/youcam/terms-of-service-api"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Terms of Service
           </a>
         </li>
         <li>
           Google Gemini API —{' '}
-          <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noreferrer"
+          >
             Google Privacy Policy
           </a>
         </li>
