@@ -89,7 +89,7 @@ export function UploadCard({
 
   return (
     <section className="panel">
-      <h2>1. Photo &amp; Scent Preferences</h2>
+      <h2>Photo &amp; Scent Preferences</h2>
 
       <div className="source-tabs" role="tablist" aria-label="Photo source">
         <button

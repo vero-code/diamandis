@@ -1,0 +1,152 @@
+.app-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: block;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.brand-text h1 {
+  font-family: var(--serif);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.brand-text .eyebrow {
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.header-hero-inline {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-hero-inline h2 {
+  font-family: var(--serif);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.hero-sep {
+   font-size: 0;
+  width: 1px;
+  height: 34px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.header-desc {
+  flex: 1;
+  font-size: var(--text-base);
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.mode-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mode-link {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  white-space: nowrap;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.mode-link:hover {
+  border-color: var(--gold);
+}
+
+.mode-link-active {
+  background: var(--primary);
+  color: var(--gold-bright);
+  border-color: var(--gold);
+}
+
+@media (max-width: 1200px) {
+  .header-hero-inline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .hero-sep {
+    display: none;
+  }
+
+  .header-hero-inline h2 {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .header-hero-inline {
+    margin: 0;
+  }
+}
