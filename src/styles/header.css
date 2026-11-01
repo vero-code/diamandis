@@ -71,7 +71,7 @@
   font-family: var(--serif);
   font-size: var(--text-2xl);
   font-weight: 600;
-  color: var(--text-h);
+  color: var(--primary);
   margin: 0;
   white-space: nowrap;
   line-height: 1.2;

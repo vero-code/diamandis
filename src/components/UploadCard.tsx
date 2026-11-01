@@ -153,22 +153,28 @@ export function UploadCard({
                   type="button"
                   className="preview-nav-btn"
                   onClick={() => cycleSample(-1)}
+                  aria-label="Previous sample portrait"
                   title="Previous sample portrait"
                 >
-                  ‹ Prev
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="8,2 4,6 8,10" />
+                  </svg>
                 </button>
                 <span className="preview-counter">
                   {currentSampleIndex >= 0
-                    ? `Sample ${currentSampleIndex + 1} / ${SAMPLE_PORTRAITS.length}`
+                    ? `${currentSampleIndex + 1} / ${SAMPLE_PORTRAITS.length}`
                     : 'Custom URL'}
                 </span>
                 <button
                   type="button"
                   className="preview-nav-btn"
                   onClick={() => cycleSample(1)}
+                  aria-label="Next sample portrait"
                   title="Next sample portrait"
                 >
-                  Next ›
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="4,2 8,6 4,10" />
+                  </svg>
                 </button>
               </div>
             </div>
