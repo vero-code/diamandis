@@ -6,8 +6,20 @@ import { LegalPage } from './components/LegalPage'
 import { MolecularBackground } from './components/MolecularBackground'
 import { SkinResults } from './components/SkinResults'
 import { UploadCard } from './components/UploadCard'
-import { SCENT_OPTIONS, EXAMPLE_IMAGE_URL, FAQ_ITEMS } from './constants'
-import type { CurationResult, LocalFilePayload, Metric, Page } from './types'
+import { BoutiqueStudio } from './components/BoutiqueStudio'
+import {
+  DEFAULT_FRAGRANCE_CATALOG,
+  SCENT_OPTIONS,
+  EXAMPLE_IMAGE_URL,
+  FAQ_ITEMS
+} from './constants'
+import type {
+  CatalogFragrance,
+  CurationResult,
+  LocalFilePayload,
+  Metric,
+  Page
+} from './types'
 import {
   asRecord,
   formatYouCamError,
@@ -19,6 +31,19 @@ import {
 } from './utils/api'
 
 function App() {
+  const [customApiKey, setCustomApiKey] = useState('')
+  const [catalog, setCatalog] = useState<CatalogFragrance[]>(() => {
+    try {
+      const saved = localStorage.getItem('diamandis_catalog')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length >= 3) return parsed
+      }
+    } catch {
+      // Ignore storage errors
+    }
+    return DEFAULT_FRAGRANCE_CATALOG
+  })
   const [imageUrl, setImageUrl] = useState(EXAMPLE_IMAGE_URL)
   const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
   const [preference, setPreference] = useState(SCENT_OPTIONS[0])
@@ -31,6 +56,15 @@ function App() {
   const [curation, setCuration] = useState<CurationResult | null>(null)
   const [recommendationError, setRecommendationError] = useState('')
   const [page, setPage] = useState<Page>(getPage)
+
+  function updateCatalog(next: CatalogFragrance[]) {
+    setCatalog(next)
+    try {
+      localStorage.setItem('diamandis_catalog', JSON.stringify(next))
+    } catch {
+      // Ignore storage errors
+    }
+  }
 
   // Sync page with URL hash
   useEffect(() => {
@@ -51,9 +85,13 @@ function App() {
     setMetrics([])
 
     try {
+      const youcamHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(customApiKey.trim() ? { 'x-youcam-key': customApiKey.trim() } : {}),
+      }
       const startResponse = await fetch('/api/skin-analysis', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: youcamHeaders,
         body: JSON.stringify(
           localFile
             ? {
@@ -75,9 +113,14 @@ function App() {
         setMessage(`Analyzing skin… Check ${attempt + 1} of 60`)
         await wait(2000)
 
-        const statusResponse = await fetch(
-          `/api/skin-analysis/${encodeURIComponent(taskId)}`,
-        )
+      const statusResponse = await fetch(
+        `/api/skin-analysis/${encodeURIComponent(taskId)}`,
+        {
+          headers: customApiKey.trim()
+            ? { 'x-youcam-key': customApiKey.trim() }
+            : {},
+        },
+      )
         const statusData = asRecord(await readJson(statusResponse))
         const status = statusData?.task_status
 
@@ -94,6 +137,7 @@ function App() {
                 metrics: analysisMetrics,
                 preference,
                 customPerfume,
+                catalog,
               }),
             })
 
@@ -129,7 +173,24 @@ function App() {
     <main className="app">
       <MolecularBackground />
       <header className="app-header">
-        <p className="eyebrow">DIAMANDIS · SKIN × SCENT</p>
+        <div className="header-top-row">
+          <p className="eyebrow">DIAMANDIS · SKIN × SCENT</p>
+          <nav className="mode-nav" aria-label="Application mode">
+            <a
+              href="#/"
+              className={`mode-link ${page === 'home' ? 'mode-link-active' : ''}`}
+            >
+              🛍 Shopper View
+            </a>
+            <a
+              href="#/studio"
+              className={`mode-link ${page === 'studio' ? 'mode-link-active' : ''}`}
+            >
+              🏛 Boutique &amp; Judge Studio
+              {customApiKey.trim() ? ' (Custom Key)' : ''}
+            </a>
+          </nav>
+        </div>
         <h1>Skin-Informed Fragrance Selection</h1>
         <p>
           Analyze facial skin metrics via YouCam API and receive editorial
@@ -137,8 +198,15 @@ function App() {
         </p>
       </header>
 
-      {page !== 'home' ? (
+      {page === 'privacy' || page === 'terms' ? (
         <LegalPage page={page} />
+      ) : page === 'studio' ? (
+        <BoutiqueStudio
+          catalog={catalog}
+          customApiKey={customApiKey}
+          onCatalogChange={updateCatalog}
+          onCustomApiKeyChange={setCustomApiKey}
+        />
       ) : (
         <div className="workspace-grid">
           <div className="workspace-left">

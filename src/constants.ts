@@ -1,3 +1,5 @@
+import type { CatalogFragrance } from './types'
+
 export const SAMPLE_PORTRAITS = [
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png',
   'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_02_875f3b51a3.png',
@@ -51,5 +53,38 @@ export const FAQ_ITEMS = [
     question: 'What happens if I upload a photo without a clear face?',
     answer:
       'The YouCam Skin Analysis AI requires a single, well-lit, front-facing face. If no face is detected (error_no_face), multiple people are in frame (error_multiple_people), or the angle is too extreme, the API stops and prompts you to try a clear portrait.',
+  },
+]
+
+export const DEFAULT_FRAGRANCE_CATALOG: CatalogFragrance[] = [
+  {
+    name: 'Citrus Atelier',
+    concentration: 'Eau de Toilette (EDT · 12%)',
+    notes: 'Top: Bergamot, neroli · Base: Dry cedar',
+  },
+  {
+    name: 'Velvet Amber',
+    concentration: 'Extrait de Parfum (28%)',
+    notes: 'Top: Powdery iris · Base: Labdanum amber, sandalwood',
+  },
+  {
+    name: 'Quiet Woods',
+    concentration: 'Eau de Parfum (EDP · 18%)',
+    notes: 'Top: Green fig · Base: Soft skin musk, vetiver',
+  },
+  {
+    name: 'Marine Mineral',
+    concentration: 'Eau de Toilette (EDT · 14%)',
+    notes: 'Top: Sea salt, clary sage · Base: Mineral driftwood',
+  },
+  {
+    name: 'Botanical Veil',
+    concentration: 'Eau de Parfum (EDP · 20%)',
+    notes: 'Top: White tea, jasmine · Base: Cashmere wood',
+  },
+  {
+    name: 'Spiced Resin',
+    concentration: 'Extrait de Parfum (30%)',
+    notes: 'Top: Crushed cardamom · Base: Benzoin resin, smoked cedar',
   },
 ]

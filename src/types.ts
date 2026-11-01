@@ -1,4 +1,4 @@
-export type Page = 'home' | 'privacy' | 'terms'
+export type Page = 'home' | 'studio' | 'privacy' | 'terms'
 
 export type LocalFilePayload = {
   fileName: string
@@ -41,4 +41,10 @@ export type CurationResult = {
   skinPrep: SkinPrepRecommendation
   customPerfumeAnalysis?: CustomPerfumeAnalysis
   recommendations: FragranceRecommendation[]
+}
+
+export type CatalogFragrance = {
+  name: string
+  concentration: string
+  notes: string
 }

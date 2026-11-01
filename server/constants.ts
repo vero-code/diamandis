@@ -1,3 +1,6 @@
+export const creditApiUrl =
+  'https://yce-api-01.makeupar.com/s2s/v1.0/client/credit'
+
 export const baseUrl =
   'https://yce-api-01.makeupar.com/s2s/v2.1/task/skin-analysis'
 
@@ -131,6 +134,7 @@ export function buildGeminiPrompt(
   metrics: unknown[],
   preference: string,
   customPerfume = '',
+  activeCatalog = fragranceCatalog,
 ): string {
   return [
     'You are a perfumery and skincare formulation advisor for Diamandis.',
@@ -149,6 +153,6 @@ export function buildGeminiPrompt(
     `User specific perfume to test: ${customPerfume || 'None'}`,
     `Skin metrics: ${JSON.stringify(metrics)}`,
     `SkinPrepCatalog: ${JSON.stringify(skinPrepCatalog)}`,
-    `FragranceCatalog: ${JSON.stringify(fragranceCatalog)}`,
+    `FragranceCatalog: ${JSON.stringify(activeCatalog)}`,
   ].join('\n')
 }

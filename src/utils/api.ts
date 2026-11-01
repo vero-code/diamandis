@@ -110,6 +110,7 @@ export function wait(ms: number) {
 }
 
 export function getPage(): Page {
+  if (window.location.hash === '#/studio') return 'studio'
   if (window.location.hash === '#/privacy') return 'privacy'
   if (window.location.hash === '#/terms') return 'terms'
   return 'home'
