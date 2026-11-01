@@ -160,17 +160,21 @@ function App() {
               onConsentChange={setConsent}
               onAnalyze={analyze}
             />
+          </div>
 
+          <div className="workspace-right">
             <AnalysisProgress
               loading={loading}
               message={message}
               hasError={hasError}
               onRetry={analyze}
             />
-          </div>
 
-          <div className="workspace-right">
-            {metrics.length === 0 && !curation && !recommendationError ? (
+            {!loading &&
+            !hasError &&
+            metrics.length === 0 &&
+            !curation &&
+            !recommendationError ? (
               <section className="panel empty-state-panel">
                 <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
                 <h2>How Skin Chemistry Shapes Scent</h2>
@@ -210,11 +214,13 @@ function App() {
               <>
                 <SkinResults metrics={metrics} />
 
-                <FragranceRecommendations
-                  curation={curation}
-                  error={recommendationError}
-                  loading={loading}
-                />
+                {metrics.length > 0 && (
+                  <FragranceRecommendations
+                    curation={curation}
+                    error={recommendationError}
+                    loading={loading}
+                  />
+                )}
               </>
             )}
           </div>
