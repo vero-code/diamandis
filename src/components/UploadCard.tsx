@@ -201,21 +201,15 @@ export function UploadCard({
           )}
         </div>
       )}
+      <p className="field-hint">
+        YouCam Skin AI analyzes visible skin traits that affect how fragrance lasts.
+        Use a front-facing photo in even light.
+      </p>
 
       <div className="field">
         <div className="label-with-hint">
           <label htmlFor="scent-preference">Preferred scent profile</label>
-          <span
-            className="info-badge"
-            title="Skin-Prep Base is chosen strictly by your skin metrics. Your preferred scent profile guides which 3 perfumes from our catalog Gemini prioritizes for your skin."
-          >
-            ⓘ How this affects AI
-          </span>
         </div>
-        <p className="field-hint">
-          Guides Step 2 perfume selection while keeping Step 1 skin-prep strictly
-          biomarker-driven.
-        </p>
         <select
           id="scent-preference"
           value={preference}
@@ -227,11 +221,14 @@ export function UploadCard({
             </option>
           ))}
         </select>
+        <p className="field-hint">
+          Perfume picks balance this profile with your skin metrics. Skin-prep is based on skin metrics only.
+        </p>
       </div>
 
       <div className="field">
         <label htmlFor="custom-perfume">
-          Test a specific perfume you own
+          Test a specific perfume
         </label>
         <input
           id="custom-perfume"
@@ -242,7 +239,7 @@ export function UploadCard({
           maxLength={100}
         />
         <p className="field-hint">
-          Found out how this perfume behaves on your skin and how long
+          Find out how this perfume behaves on your skin and how long
           it will last, plus suggest catalog alternatives.
         </p>
       </div>
