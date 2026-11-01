@@ -24,6 +24,7 @@ export function SkinResults({ metrics }: SkinResultsProps) {
   if (filtered.length === 0) return null
 
   const overallScore = metrics.find((item) => item.type === 'all')?.score
+  const skinAge = metrics.find((item) => item.type === 'skin_age')?.score
   const baseImageUrl = metrics.find((item) => item.type === 'resize_image')?.mask_url
 
   const activeIndex =
@@ -37,11 +38,18 @@ export function SkinResults({ metrics }: SkinResultsProps) {
     <section className="panel" aria-live="polite">
       <div className="section-title-row">
         <h2>YouCam Skin Metrics</h2>
-        {typeof overallScore === 'number' && (
-          <span className="overall-badge">
-            Overall Skin Score: {Math.round(overallScore)} / 100
-          </span>
-        )}
+        <div className="score-badges">
+          {typeof overallScore === 'number' && (
+            <span className="overall-badge">
+              Overall Skin Score: {Math.round(overallScore)} / 100
+            </span>
+          )}
+          {typeof skinAge === 'number' && (
+            <span className="skin-age-badge">
+              Est. Skin Age: {Math.round(skinAge)}
+            </span>
+          )}
+        </div>
       </div>
 
       <p className="note">
