@@ -10,6 +10,14 @@ Diamandis connects facial skin diagnostics from the **Perfect Corp. YouCam Skin 
 
 > **Disclaimer:** Skin metrics and fragrance suggestions are provided for editorial and shopping reference only. They are not medical diagnoses and do not scientifically measure or guarantee fragrance longevity.
 
+## How "Preferred Scent Profile" vs. Skin Metrics Influences the AI
+
+Diamandis separates skincare chemistry from personal olfactory taste so recommendations stay both scientifically grounded and wearable:
+
+- **Step 1 · Skin-Prep Layering Base (`skinPrep`):** Determined **100% by your YouCam skin metrics** (`oiliness`, `moisture`, `texture`, `pore`, `redness`, and facial zones). It does **not** depend on your chosen scent preference. For example, high sebum (`oiliness < 70`) selects the *Oil-Balancing Niacinamide Gel Primer*, while low hydration selects the *Ceramide & Squalane Lipid Balm*.
+- **Step 2 · Curated Perfumes (`recommendations`):** Bridges your **Preferred Scent Profile** with your **Skin Scent Retention Profile**. Gemini prioritizes catalog fragrances that match your chosen notes (e.g., *Citrus Atelier* for *Fresh citrus and neroli*, or *Quiet Woods* for *Soft musk, fig, and vetiver*) while selecting concentrations (`EDT`, `EDP`, `Extrait`) and base notes that hold best on your skin type and estimating wear-time longevity in hours.
+- **Personal Bottle Check (Optional):** If you enter a specific perfume you already own (e.g., *Fabien Marche Elixir de Pitaya*), Gemini evaluates how its note pyramid interacts with your measured skin biomarkers and how to prep your pulse points before spraying.
+
 ## Prerequisites
 
 - Node.js 18+
