@@ -467,6 +467,178 @@
   color: var(--primary);
 }
 
+/* 9 Sample Portraits Grid */
+.sample-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+}
+
+.panel button.sample-thumb-btn {
+  padding: 2px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  overflow: hidden;
+  line-height: 0;
+}
+
+.panel button.sample-thumb-btn.sample-thumb-active {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.45);
+}
+
+.sample-thumb-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+/* Preferred scent profile hint & badge */
+.label-with-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.info-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--surface-low);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 2px 8px;
+  cursor: help;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Visible Spinner & Progress Bar */
+.status-panel {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.status-panel-loading {
+  border-color: var(--gold);
+  background: var(--surface);
+}
+
+.status-panel-error {
+  border-color: var(--error);
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-text {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(197, 160, 89, 0.3);
+  border-top-color: var(--primary);
+  animation: diamandis-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes diamandis-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--gold-bright));
+  border-radius: 999px;
+  animation: diamandis-progress 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes diamandis-progress {
+  from {
+    transform: translateX(-20%);
+  }
+  to {
+    transform: translateX(140%);
+  }
+}
+
+/* Longevity Badge & Custom Perfume Card */
+.longevity-badge {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  background: var(--primary);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.custom-perfume-card {
+  background: var(--surface-low);
+  border-left: 3px solid var(--gold);
+}
+
+/* FAQ Panel */
+.faq-panel {
+  position: relative;
+  z-index: 1;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 18px;
+  background: var(--bg);
+}
+
+.faq-item summary {
+  font-weight: 600;
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.faq-item p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text);
+}
+
 @media (max-width: 640px) {
   .prep-card {
     flex-direction: column;
@@ -476,19 +648,7 @@
   .product-visual-prep {
     width: 100%;
   }
-}
 
-@media (max-width: 960px) {
-  .workspace-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .workspace-left {
-    position: static;
-  }
-}
-
-@media (max-width: 640px) {
   .app {
     padding: 32px 16px 56px;
   }
@@ -503,5 +663,15 @@
 
   .insight-layout {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 960px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-left {
+    position: static;
   }
 }
