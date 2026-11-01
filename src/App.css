@@ -840,6 +840,62 @@
   padding: 6px 12px;
 }
 
+.source-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.panel button.source-tab {
+  align-self: stretch;
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  background: var(--surface-low);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.panel button.source-tab:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: var(--surface);
+}
+
+.panel button.source-tab-active,
+.panel button.source-tab-active:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--gold-bright);
+  border-color: var(--gold);
+}
+
+.dropzone-box {
+  min-height: 268px;
+  align-items: center;
+  border-style: dashed;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.dropzone-box:hover,
+.dropzone-active {
+  border-color: var(--gold);
+  background: var(--surface);
+}
+
+.dropzone-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  padding: 24px;
+}
+
+.dropzone-title {
+  font-weight: 600;
+  color: var(--primary);
+}
+
 @media (max-width: 640px) {
   .prep-card {
     flex-direction: column;

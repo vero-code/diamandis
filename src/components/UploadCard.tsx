@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import { SAMPLE_PORTRAITS, SCENT_OPTIONS } from '../constants'
 import type { LocalFilePayload } from '../types'
 
@@ -31,44 +31,59 @@ export function UploadCard({
   onConsentChange,
   onAnalyze,
 }: UploadCardProps) {
-  const hasValidSource =
-    localFile !== null || imageUrl.startsWith('https://')
-  const canSubmit = !loading && consent && hasValidSource
-  const previewSrc = localFile
-    ? localFile.dataUrl
-    : imageUrl.startsWith('https://')
-      ? imageUrl
-      : ''
+  const [inputMode, setInputMode] = useState<'url' | 'upload'>('url')
+  const [savedFile, setSavedFile] = useState<LocalFilePayload | null>(localFile)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  function handleFileInput(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) {
-      onLocalFileChange(null)
-      return
-    }
+  const hasValidSource =
+    inputMode === 'upload'
+      ? savedFile !== null
+      : imageUrl.startsWith('https://')
+  const canSubmit = !loading && consent && hasValidSource
+
+  const previewSrc =
+    inputMode === 'upload'
+      ? savedFile?.dataUrl ?? ''
+      : imageUrl.startsWith('https://')
+        ? imageUrl
+        : ''
+
+  function processFile(file: File | undefined) {
+    if (!file) return
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png') return
 
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        onLocalFileChange({
+        const payload: LocalFilePayload = {
           fileName: file.name,
           contentType: file.type || 'image/jpeg',
           dataUrl: reader.result,
-        })
+        }
+        setSavedFile(payload)
+        onLocalFileChange(payload)
       }
     }
     reader.readAsDataURL(file)
   }
 
-  const currentSampleIndex = localFile
-    ? -1
-    : SAMPLE_PORTRAITS.indexOf(imageUrl)
+  function handleFileInput(e: ChangeEvent<HTMLInputElement>) {
+    processFile(e.target.files?.[0])
+  }
+
+  function handleDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault()
+    setIsDragging(false)
+    processFile(e.dataTransfer.files?.[0])
+  }
+
+  const currentSampleIndex = SAMPLE_PORTRAITS.indexOf(imageUrl)
 
   function cycleSample(step: number) {
     const baseIndex = currentSampleIndex >= 0 ? currentSampleIndex : 0
     const nextIndex =
       (baseIndex + step + SAMPLE_PORTRAITS.length) % SAMPLE_PORTRAITS.length
-    onLocalFileChange(null)
     onImageUrlChange(SAMPLE_PORTRAITS[nextIndex])
   }
 
@@ -76,26 +91,32 @@ export function UploadCard({
     <section className="panel">
       <h2>1. Photo &amp; Scent Preferences</h2>
 
-      <div className="field">
-        <label htmlFor="local-file">
-          Or upload your own portrait (JPG or PNG)
-        </label>
-        <input
-          id="local-file"
-          type="file"
-          accept="image/jpeg,image/png"
-          onChange={handleFileInput}
-        />
-        {localFile && (
-          <button type="button" onClick={() => onLocalFileChange(null)}>
-            Switch back to sample / URL ({localFile.fileName})
-          </button>
-        )}
+      <div className="source-tabs" role="tablist" aria-label="Photo source">
+        <button
+          type="button"
+          className={`source-tab ${inputMode === 'url' ? 'source-tab-active' : ''}`}
+          onClick={() => {
+            setInputMode('url')
+            onLocalFileChange(null)
+          }}
+        >
+          Image URL
+        </button>
+        <button
+          type="button"
+          className={`source-tab ${inputMode === 'upload' ? 'source-tab-active' : ''}`}
+          onClick={() => {
+            setInputMode('upload')
+            onLocalFileChange(savedFile)
+          }}
+        >
+          Upload Portrait
+        </button>
       </div>
 
-      {!localFile && (
+      {inputMode === 'url' ? (
         <div className="field">
-          <label htmlFor="image-url">Or paste a public HTTPS image URL</label>
+          <label htmlFor="image-url">Paste a public HTTPS image URL</label>
           <input
             id="image-url"
             type="url"
@@ -104,41 +125,80 @@ export function UploadCard({
             placeholder="https://example.com/photo.jpg"
           />
         </div>
+      ) : (
+        <div className="field">
+          <label htmlFor="local-file">Upload your own portrait (JPG or PNG)</label>
+          <input
+            ref={fileInputRef}
+            id="local-file"
+            type="file"
+            accept="image/jpeg,image/png"
+            onChange={handleFileInput}
+          />
+        </div>
       )}
 
-      {previewSrc && (
-        <div className="preview-box">
-          <div className="preview-stage">
-            <img
-              src={previewSrc}
-              alt="Selected portrait preview"
-              className="preview-img"
-              referrerPolicy="no-referrer"
-            />
-            <div className="preview-switcher">
-              <button
-                type="button"
-                className="preview-nav-btn"
-                onClick={() => cycleSample(-1)}
-                title="Previous sample portrait"
-              >
-                ‹ Prev
-              </button>
-              <span className="preview-counter">
-                {currentSampleIndex >= 0
-                  ? `Sample ${currentSampleIndex + 1} / ${SAMPLE_PORTRAITS.length}`
-                  : 'Custom Photo'}
-              </span>
-              <button
-                type="button"
-                className="preview-nav-btn"
-                onClick={() => cycleSample(1)}
-                title="Next sample portrait"
-              >
-                Next ›
-              </button>
+      {inputMode === 'url' ? (
+        previewSrc && (
+          <div className="preview-box">
+            <div className="preview-stage">
+              <img
+                src={previewSrc}
+                alt="Selected portrait preview"
+                className="preview-img"
+                referrerPolicy="no-referrer"
+              />
+              <div className="preview-switcher">
+                <button
+                  type="button"
+                  className="preview-nav-btn"
+                  onClick={() => cycleSample(-1)}
+                  title="Previous sample portrait"
+                >
+                  ‹ Prev
+                </button>
+                <span className="preview-counter">
+                  {currentSampleIndex >= 0
+                    ? `Sample ${currentSampleIndex + 1} / ${SAMPLE_PORTRAITS.length}`
+                    : 'Custom URL'}
+                </span>
+                <button
+                  type="button"
+                  className="preview-nav-btn"
+                  onClick={() => cycleSample(1)}
+                  title="Next sample portrait"
+                >
+                  Next ›
+                </button>
+              </div>
             </div>
           </div>
+        )
+      ) : (
+        <div
+          className={`preview-box dropzone-box ${isDragging ? 'dropzone-active' : ''}`}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setIsDragging(true)
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {previewSrc ? (
+            <div className="preview-stage">
+              <img
+                src={previewSrc}
+                alt="Uploaded portrait preview"
+                className="preview-img"
+              />
+            </div>
+          ) : (
+            <div className="dropzone-placeholder">
+              <p className="dropzone-title">Drag &amp; drop portrait here</p>
+              <p className="field-hint">or click to choose JPG / PNG</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -171,7 +231,7 @@ export function UploadCard({
 
       <div className="field">
         <label htmlFor="custom-perfume">
-          Or test a specific perfume you own (optional)
+          Test a specific perfume you own
         </label>
         <input
           id="custom-perfume"
@@ -182,7 +242,7 @@ export function UploadCard({
           maxLength={100}
         />
         <p className="field-hint">
-          Gemini will explain how this perfume behaves on your skin and how long
+          Found out how this perfume behaves on your skin and how long
           it will last, plus suggest catalog alternatives.
         </p>
       </div>
@@ -201,7 +261,7 @@ export function UploadCard({
       </label>
 
       <button disabled={!canSubmit} onClick={onAnalyze}>
-        {loading ? 'Analyzing Skin & Scent…' : 'Run skin analysis'}
+        {loading ? 'Analyzing Skin & Scent…' : 'Run analysis'}
       </button>
     </section>
   )
