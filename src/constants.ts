@@ -45,9 +45,9 @@ export const FAQ_ITEMS = [
       'Step 1 (Skin-Prep Layering Base) is selected strictly from your YouCam skin biomarkers (oiliness, moisture, texture, pores, redness) and ignores scent taste. Step 2 (Curated Perfumes) bridges both: Gemini selects catalog fragrances that match your olfactory preference while suiting your skin’s retention profile.',
   },
   {
-    question: 'Can I test a perfume I already own (e.g., Fabien Marche Elixir de Pitaya)?',
+    question: 'Can I test a perfume I already own?',
     answer:
-      'Yes! Enter any perfume name in the optional “Or test a specific perfume you own” field. Gemini will analyze how its likely note structure behaves on your specific skin metrics, estimate wear time, and advise how to layer it with your Skin-Prep Base.',
+      'Yes! Enter any perfume name in the optional “Or test a specific perfume you own” field. Diamandis will analyze how its likely note structure behaves on your specific skin metrics, estimate wear time, and advise how to layer it with your Skin-Prep Base.',
   },
   {
     question: 'What happens if I upload a photo without a clear face?',

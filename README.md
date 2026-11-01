@@ -16,7 +16,7 @@ Diamandis separates skincare chemistry from personal olfactory taste so recommen
 
 - **Step 1 · Skin-Prep Layering Base (`skinPrep`):** Determined **100% by your YouCam skin metrics** (`oiliness`, `moisture`, `texture`, `pore`, `redness`, and facial zones). It does **not** depend on your chosen scent preference. For example, high sebum (`oiliness < 70`) selects the *Oil-Balancing Niacinamide Gel Primer*, while low hydration selects the *Ceramide & Squalane Lipid Balm*.
 - **Step 2 · Curated Perfumes (`recommendations`):** Bridges your **Preferred Scent Profile** with your **Skin Scent Retention Profile**. Gemini prioritizes catalog fragrances that match your chosen notes (e.g., *Citrus Atelier* for *Fresh citrus and neroli*, or *Quiet Woods* for *Soft musk, fig, and vetiver*) while selecting concentrations (`EDT`, `EDP`, `Extrait`) and base notes that hold best on your skin type and estimating wear-time longevity in hours.
-- **Personal Bottle Check (Optional):** If you enter a specific perfume you already own (e.g., *Fabien Marche Elixir de Pitaya*), Gemini evaluates how its note pyramid interacts with your measured skin biomarkers and how to prep your pulse points before spraying.
+- **Personal Bottle Check (Optional):** If you enter a specific perfume you already own (e.g., *Elixir de Pitaya*), Gemini evaluates how its note pyramid interacts with your measured skin biomarkers and how to prep your pulse points before spraying.
 
 ## Prerequisites
 

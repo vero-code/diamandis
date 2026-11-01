@@ -178,7 +178,7 @@ export function UploadCard({
           type="text"
           value={customPerfume}
           onChange={(e) => onCustomPerfumeChange(e.target.value)}
-          placeholder="e.g., Fabien Marche Elixir de Pitaya"
+          placeholder="e.g., Elixir de Pitaya"
           maxLength={100}
         />
         <p className="field-hint">

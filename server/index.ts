@@ -223,7 +223,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
       ? req.body.customPerfume.trim().slice(0, 100)
       : ''
 
-  const activeCatalog =
+  const activeCatalog: Array<{ name: string; concentration: string; notes: string }> =
     Array.isArray(req.body?.catalog) && req.body.catalog.length >= 3
       ? req.body.catalog
           .flatMap((item: unknown) => {
