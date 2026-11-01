@@ -142,7 +142,7 @@
 }
 
 .note {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--text-muted);
 }
 
@@ -355,8 +355,6 @@
 }
 
 .workspace-left {
-  position: sticky;
-  top: 140px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -659,12 +657,63 @@
 .faq-panel {
   position: relative;
   z-index: 1;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.faq-panel:hover {
+  border-color: var(--gold);
+}
+
+.faq-panel-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  list-style: none;
+  user-select: none;
+}
+
+.faq-panel-summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.faq-toggle-badge {
+  font-family: var(--sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 14px;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.faq-panel[open] .faq-toggle-badge {
+  background: var(--primary);
+  color: var(--gold-bright);
+  border-color: var(--gold);
+}
+
+.faq-panel[open] .faq-panel-summary {
+  margin-bottom: 8px;
 }
 
 .faq-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  cursor: default;
 }
 
 .faq-item {
@@ -678,6 +727,12 @@
   font-weight: 600;
   color: var(--text-h);
   cursor: pointer;
+}
+
+.faq-item p {
+  margin-top: 10px;
+  font-size: var(--text-sm);
+  color: var(--text);
 }
 
 .faq-item p {
@@ -799,6 +854,54 @@
 .dropzone-title {
   font-weight: 600;
   color: var(--primary);
+}
+
+.science-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.science-panel .metric {
+  background: var(--surface-low);
+  border-left: 3px solid var(--gold);
+}
+
+.science-citations {
+  margin-top: 8px;
+  padding: 14px 18px;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px;
+}
+
+.science-citations-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.science-citations-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-base);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.science-citations-list strong {
+  color: var(--text-h);
+}
+
+.science-citations-list em {
+  color: var(--gold);
+  font-style: normal;
 }
 
 @media (max-width: 640px) {

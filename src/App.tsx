@@ -219,7 +219,6 @@ function App() {
             !recommendationError ? (
               <>
                 <section className="panel empty-state-panel">
-                  <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
                   <h2>How Skin Chemistry Shapes Scent</h2>
                   <p className="note">
                     Run the analysis on the left to inspect your YouCam AI zone
@@ -254,9 +253,68 @@ function App() {
                   </div>
                 </section>
 
-                <section className="panel faq-panel">
-                  <p className="eyebrow">FREQUENTLY ASKED QUESTIONS</p>
-                  <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
+                <section className="panel science-panel">
+                  <p className="eyebrow">THE OLFACTORY SCIENCE</p>
+                  <h2>Why Epidermal Metrics Determine Fragrance Longevity</h2>
+                  <p className="note">
+                    Fragrance molecules are lipophilic (oil-soluble). Your skin&apos;s natural lipid film
+                    dictates evaporation rate, note progression, and wear time:
+                  </p>
+                  <div className="metrics">
+                    <article className="metric">
+                      <p className="notes">Lipid-Rich · Oily Skin</p>
+                      <h3>Slow Evaporation &amp; Projection</h3>
+                      <p>
+                        High sebum anchors volatile top notes and amplifies warm base accords.
+                        Fresh citrus, neroli, and aquatic EDTs stay radiant much longer without turning heavy.
+                      </p>
+                    </article>
+                    <article className="metric">
+                      <p className="notes">Alipic · Dry Skin</p>
+                      <h3>Rapid Flash-Off</h3>
+                      <p>
+                        Low surface lipids let alcohol and top notes flash off quickly.
+                        Benefits from a squalane or ceramide base primer, followed by EDP or Extrait concentrations.
+                      </p>
+                    </article>
+                    <article className="metric">
+                      <p className="notes">Balanced · Normal Skin</p>
+                      <h3>Classic Pyramid Evolution</h3>
+                      <p>
+                        Balanced moisture and oil allow the fragrance to transition smoothly through top,
+                        heart, and base notes according to the perfumer&apos;s design.
+                      </p>
+                    </article>
+                  </div>
+                  <div className="science-citations">
+                    <p className="science-citations-title">
+                      Scientific Foundation &amp; Olfactory Biophysics:
+                    </p>
+                    <ul className="science-citations-list">
+                      <li>
+                        <strong>Raoult&apos;s Law &amp; Vapor Pressure:</strong> Lipid matrices lower the vapor pressure of non-polar fragrance compounds (logP &gt; 2.5), slowing diffusion and evaporation.
+                      </li>
+                      <li>
+                        <strong>Sebaceous Fixation:</strong> Human sebum contains ~12% squalene and 26% wax esters, acting as natural chemical fixatives for volatile top notes (terpenes, aldehydes).
+                      </li>
+                      <li>
+                        <strong>Dermatological References:</strong> J. Stephan Jellinek (<em>Physical Chemistry of Fragrances</em>) &amp; Barel, Paye, Maibach (<em>Handbook of Cosmetic Science and Technology</em>, Stratum Corneum Hydration &amp; TEWL).
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+
+                <details className="panel faq-panel">
+                  <summary className="faq-panel-summary">
+                    <div className="faq-panel-title">
+                      <p className="eyebrow">QUESTIONS &amp; ANSWERS</p>
+                      <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
+                    </div>
+                    <span className="faq-toggle-badge" aria-hidden="true">
+                      FAQ List ▾
+                    </span>
+                  </summary>
+
                   <div className="faq-list">
                     {FAQ_ITEMS.map((item) => (
                       <details key={item.question} className="faq-item">
@@ -265,7 +323,7 @@ function App() {
                       </details>
                     ))}
                   </div>
-                </section>
+                </details>
               </>
             ) : (
               <>
