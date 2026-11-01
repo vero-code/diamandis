@@ -29,6 +29,7 @@ export function BoutiqueStudio({
   const [baseNotes, setBaseNotes] = useState('');
   const [creditStatus, setCreditStatus] = useState('');
   const [checkingKey, setCheckingKey] = useState(false);
+  const [pendingRemove, setPendingRemove] = useState<string | null>(null);
 
   function handleAddFragrance(e: FormEvent) {
     e.preventDefault();
@@ -54,6 +55,7 @@ export function BoutiqueStudio({
   function handleRemove(targetName: string) {
     if (catalog.length <= 3) return;
     onCatalogChange(catalog.filter((item) => item.name !== targetName));
+    setPendingRemove(null);
   }
 
   async function handleVerifyKey() {
@@ -80,15 +82,23 @@ export function BoutiqueStudio({
   return (
     <div className="studio-layout">
       <section className="panel">
-        <p className="eyebrow">HACKATHON JUDGE &amp; API SETTINGS</p>
+        <p className="eyebrow">USER SETTINGS</p>
         <h2>Bring Your Own YouCam Skin AI Key</h2>
         <p className="note">
           Leave blank to use the server’s default key, or paste your own Perfect Corp. YouCam API
-          Bearer token to test with your account.
+          key to test with your account. Get one in the{' '}
+          <a
+            href="https://yce.makeupar.com/api-console/en/api-keys/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            YouCam API Console
+          </a>
+          .
         </p>
 
         <div className="field">
-          <label htmlFor="judge-api-key">YouCam API Key Override (Optional)</label>
+          <label htmlFor="judge-api-key">YouCam API Key Override</label>
           <input
             id="judge-api-key"
             type="password"
@@ -105,7 +115,7 @@ export function BoutiqueStudio({
 
         <div className="studio-actions">
           <button type="button" onClick={handleVerifyKey} disabled={checkingKey}>
-            {checkingKey ? 'Checking Key…' : 'Verify Key & Check Balance (0 Units)'}
+            {checkingKey ? 'Checking Key…' : 'Verify Key & Check Balance'}
           </button>
           {customApiKey && (
             <button
@@ -116,7 +126,7 @@ export function BoutiqueStudio({
                 setCreditStatus('');
               }}
             >
-              Revert to Default Server Key
+              Revert to Default Key
             </button>
           )}
         </div>
@@ -127,7 +137,7 @@ export function BoutiqueStudio({
       <section className="panel">
         <div className="section-title-row">
           <div>
-            <p className="eyebrow">MERCHANT BOUTIQUE PORTAL</p>
+            <p className="eyebrow">MERCHANT BOUTIQUE</p>
             <h2>Fragrance Catalog Manager ({catalog.length} Perfumes)</h2>
           </div>
           <button
@@ -135,13 +145,12 @@ export function BoutiqueStudio({
             className="secondary-btn"
             onClick={() => onCatalogChange(DEFAULT_FRAGRANCE_CATALOG)}
           >
-            Reset Default Catalog
+            Reset Catalog
           </button>
         </div>
 
         <p className="note">
-          Add your brand’s perfumes below. When shoppers run a skin analysis, Gemini curates the top
-          3 matches directly from this active catalog.
+          Add your brand’s perfumes below. When shoppers run a skin analysis, Diamandis curates the top matches directly from this active catalog.
         </p>
 
         <form className="studio-form" onSubmit={handleAddFragrance}>
@@ -201,12 +210,56 @@ export function BoutiqueStudio({
             </div>
           </div>
 
-          <button type="submit">+ Add Fragrance to Boutique Catalog</button>
+          <button type="submit">+ Add Fragrance to Catalog</button>
         </form>
 
         <div className="metrics">
           {catalog.map((item) => (
-            <article className="metric fragrance-card" key={item.name}>
+            <article className="metric fragrance-card studio-card" key={item.name}>
+              {catalog.length > 3 && (
+                <button
+                  type="button"
+                  className="card-remove-btn"
+                  onClick={() => setPendingRemove(item.name)}
+                  aria-label={`Remove ${item.name} from catalog`}
+                  title="Remove from catalog"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="2" y1="2" x2="10" y2="10" />
+                    <line x1="10" y1="2" x2="2" y2="10" />
+                  </svg>
+                </button>
+              )}
+              {pendingRemove === item.name && (
+                <div className="card-confirm" role="alertdialog" aria-label={`Confirm removal of ${item.name}`}>
+                  <p>Remove {item.name}?</p>
+                  <div className="card-confirm-actions">
+                    <button
+                      type="button"
+                      className="card-confirm-delete"
+                      onClick={() => handleRemove(item.name)}
+                    >
+                      Remove
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={() => setPendingRemove(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
               <ProductVisual
                 name={item.name}
                 variant="perfume"
@@ -214,16 +267,11 @@ export function BoutiqueStudio({
               />
               <h3>{item.name}</h3>
               <p className="notes">{item.concentration}</p>
-              <p className="fragrance-notes">{item.notes}</p>
-              {catalog.length > 3 && (
-                <button
-                  type="button"
-                  className="mask-toggle-btn"
-                  onClick={() => handleRemove(item.name)}
-                >
-                  Remove from Catalog
-                </button>
-              )}
+              <div className="fragrance-notes">
+                {item.notes.split(' · ').map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
             </article>
           ))}
         </div>

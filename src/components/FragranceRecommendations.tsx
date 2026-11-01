@@ -103,7 +103,11 @@ export function FragranceRecommendations({
                   </span>
                 </div>
                 <p className="notes">{fragrance.concentration}</p>
-                <p className="fragrance-notes">{fragrance.notes}</p>
+                <div className="fragrance-notes">
+                  {fragrance.notes.split(' · ').map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
                 <p>{fragrance.reason}</p>
               </article>
             ))}

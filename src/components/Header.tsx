@@ -33,7 +33,6 @@ export function Header({ page, hasCustomKey }: HeaderProps) {
           </a>
           <a href="#/studio" className={`mode-link ${page === 'studio' ? 'mode-link-active' : ''}`}>
             Boutique
-            {hasCustomKey ? ' (Custom Key)' : ''}
           </a>
         </nav>
       </div>

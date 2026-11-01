@@ -407,14 +407,84 @@
   gap: 6px;
 }
 
-.fragrance-card {
-  gap: 10px;
+.studio-card {
+  position: relative;
+}
+
+.panel button.card-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.panel button.card-remove-btn:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.card-confirm {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  background: rgba(251, 249, 245, 0.94);
+  border-radius: 4px;
+}
+
+.card-confirm p {
+  font-family: var(--serif);
+  font-size: var(--text-lg);
+  color: var(--text-h);
+}
+
+.card-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.panel .card-confirm-actions button {
+  align-self: auto;
+  padding: 8px 14px;
+}
+
+.panel button.card-confirm-delete {
+  background: var(--error);
+  border-color: var(--error);
+  color: #ffffff;
+}
+
+.panel button.card-confirm-delete:hover:not(:disabled) {
+  background: #8f1414;
 }
 
 .fragrance-notes {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 /* 9 Sample Portraits Grid */
