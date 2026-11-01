@@ -1,77 +1,21 @@
-export const SAMPLE_PORTRAITS = [
-  {
-    id: '01',
-    label: 'Sample 1',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_01_5b5defd339.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png',
-  },
-  {
-    id: '02',
-    label: 'Sample 2',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_02_875f3b51a3.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_02_875f3b51a3.png',
-  },
-  {
-    id: '03',
-    label: 'Sample 3',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_03_b1d98441a6.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_03_b1d98441a6.png',
-  },
-  {
-    id: '04',
-    label: 'Sample 4',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_04_1b6339716b.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_04_1b6339716b.png',
-  },
-  {
-    id: '05',
-    label: 'Sample 5',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_05_d6671299a6.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_05_d6671299a6.png',
-  },
-  {
-    id: '06',
-    label: 'Sample 6',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_06_c9136eea8f.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_06_c9136eea8f.png',
-  },
-  {
-    id: '07',
-    label: 'Sample 7',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_07_b847f111df.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_07_b847f111df.png',
-  },
-  {
-    id: '08',
-    label: 'Sample 8',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_08_672d34078f.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_08_672d34078f.png',
-  },
-  {
-    id: '09',
-    label: 'Sample 9',
-    thumbUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_09_a0efc29e3e.png',
-    fullUrl:
-      'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_09_a0efc29e3e.png',
-  },
+const SAMPLE_THUMB_URLS = [
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_01_5b5defd339.png',
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_02_875f3b51a3.png',
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_03_b1d98441a6.png',
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_04_1b6339716b.png',
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_05_d6671299a6.png',
+  'https://plugins-media.makeupar.com/strapi/assets/thumbnail_skin_analysis_06_c9136eea8f.png',
+  'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_07_b847f111df.png',
+  'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_08_672d34078f.png',
+  'https://plugins-media.makeupar.com/strapi/assets/small_skin_analysis_09_a0efc29e3e.png',
 ]
+
+export const SAMPLE_PORTRAITS = SAMPLE_THUMB_URLS.map((thumbUrl, index) => ({
+  id: String(index + 1).padStart(2, '0'),
+  label: `Sample ${index + 1}`,
+  thumbUrl,
+  fullUrl: thumbUrl.replace(/\/(thumbnail_|small_)/, '/'),
+}))
 
 export const EXAMPLE_IMAGE_URL = SAMPLE_PORTRAITS[0].fullUrl
 
