@@ -101,6 +101,11 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
       ? req.body.preference.trim().slice(0, 120)
       : ''
 
+  const customPerfume =
+    typeof req.body?.customPerfume === 'string'
+      ? req.body.customPerfume.trim().slice(0, 100)
+      : ''
+
   try {
     const response = await fetch(geminiApiUrl,
       {
@@ -111,7 +116,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         },
         body: JSON.stringify({
           contents: [{
-            parts: [{ text: buildGeminiPrompt(metrics, preference) }],
+            parts: [{ text: buildGeminiPrompt(metrics, preference, customPerfume) }],
           }],
           generationConfig: {
             responseMimeType: 'application/json',
@@ -202,6 +207,10 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         name: fragrance.name,
         concentration: fragrance.concentration,
         notes: fragrance.notes,
+        longevity:
+          typeof row.longevity === 'string' && row.longevity.trim()
+            ? row.longevity.trim().slice(0, 40)
+            : '6–8 hours',
         reason: row.reason.trim().slice(0, 600),
       }
     })
@@ -210,6 +219,25 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
       throw new Error('Gemini returned duplicate recommendations.')
     }
 
+    const customRaw = isRecord(generated.customPerfumeAnalysis)
+      ? generated.customPerfumeAnalysis
+      : null
+    const customPerfumeAnalysis =
+      customPerfume &&
+      customRaw &&
+      typeof customRaw.verdict === 'string' &&
+      customRaw.verdict.trim()
+        ? {
+            name: customPerfume,
+            longevity:
+              typeof customRaw.longevity === 'string' &&
+              customRaw.longevity.trim()
+                ? customRaw.longevity.trim().slice(0, 40)
+                : '6–8 hours',
+            verdict: customRaw.verdict.trim().slice(0, 600),
+          }
+        : undefined
+
     res.json({
       retentionProfile,
       skinPrep: {
@@ -217,6 +245,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         focus: matchedPrep.focus,
         reason: prepReason,
       },
+      ...(customPerfumeAnalysis ? { customPerfumeAnalysis } : {}),
       recommendations: validated,
     })
   } catch (error) {

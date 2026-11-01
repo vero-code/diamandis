@@ -10,6 +10,7 @@ import { SCENT_OPTIONS, EXAMPLE_IMAGE_URL, FAQ_ITEMS } from './constants'
 import type { CurationResult, LocalFilePayload, Metric, Page } from './types'
 import {
   asRecord,
+  formatYouCamError,
   getCuration,
   getMetrics,
   getPage,
@@ -21,6 +22,7 @@ function App() {
   const [imageUrl, setImageUrl] = useState(EXAMPLE_IMAGE_URL)
   const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
   const [preference, setPreference] = useState(SCENT_OPTIONS[0])
+  const [customPerfume, setCustomPerfume] = useState('')
   const [consent, setConsent] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -91,10 +93,12 @@ function App() {
               body: JSON.stringify({
                 metrics: analysisMetrics,
                 preference,
+                customPerfume,
               }),
             })
 
             setCuration(getCuration(await readJson(response)))
+            setMessage('Analysis and fragrance curation completed.')
           } catch (error) {
             setRecommendationError(
               error instanceof Error
@@ -110,7 +114,7 @@ function App() {
         }
 
         if (status === 'error') {
-          throw new Error('YouCam could not process the image.')
+          throw new Error(formatYouCamError(statusData?.error))
         }
       }
 
@@ -146,11 +150,13 @@ function App() {
               imageUrl={imageUrl}
               localFile={localFile}
               preference={preference}
+              customPerfume={customPerfume}
               consent={consent}
               loading={loading}
               onImageUrlChange={setImageUrl}
               onLocalFileChange={setLocalFile}
               onPreferenceChange={setPreference}
+              onCustomPerfumeChange={setCustomPerfume}
               onConsentChange={setConsent}
               onAnalyze={analyze}
             />
@@ -207,6 +213,7 @@ function App() {
                 <FragranceRecommendations
                   curation={curation}
                   error={recommendationError}
+                  loading={loading}
                 />
               </>
             )}

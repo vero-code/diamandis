@@ -35,8 +35,8 @@ export function getCuration(value: unknown): CurationResult {
   const root = asRecord(value)
   const retentionProfile = root?.retentionProfile
   const skinPrep = asRecord(root?.skinPrep)
+  const customRaw = asRecord(root?.customPerfumeAnalysis)
   const rows = root?.recommendations
-
   if (
     typeof retentionProfile !== 'string' ||
     !skinPrep ||
@@ -47,7 +47,6 @@ export function getCuration(value: unknown): CurationResult {
   ) {
     throw new Error('Gemini response did not include a valid curation.')
   }
-
   const recommendations = rows.map((row: unknown) => {
     const item = asRecord(row)
     if (
@@ -59,15 +58,32 @@ export function getCuration(value: unknown): CurationResult {
     ) {
       throw new Error('Gemini returned an invalid recommendation.')
     }
-
     return {
       name: item.name,
       concentration: item.concentration,
       notes: item.notes,
+      longevity:
+        typeof item.longevity === 'string' && item.longevity.trim()
+          ? item.longevity.trim()
+          : '6–8 hours on prepped skin',
       reason: item.reason,
     }
   })
-
+  const customPerfumeAnalysis =
+    customRaw &&
+    typeof customRaw.name === 'string' &&
+    customRaw.name.trim() &&
+    typeof customRaw.verdict === 'string' &&
+    customRaw.verdict.trim()
+      ? {
+          name: customRaw.name.trim(),
+          longevity:
+            typeof customRaw.longevity === 'string' && customRaw.longevity.trim()
+              ? customRaw.longevity.trim()
+              : 'Varies by concentration',
+          verdict: customRaw.verdict.trim(),
+        }
+      : undefined
   return {
     retentionProfile,
     skinPrep: {
@@ -75,10 +91,10 @@ export function getCuration(value: unknown): CurationResult {
       focus: skinPrep.focus,
       reason: skinPrep.reason,
     },
+    ...(customPerfumeAnalysis ? { customPerfumeAnalysis } : {}),
     recommendations,
   }
 }
-
 
 export async function readJson(response: Response): Promise<unknown> {
   const data: unknown = await response.json()

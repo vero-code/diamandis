@@ -20,6 +20,7 @@ export type FragranceRecommendation = {
   name: string
   concentration: string
   notes: string
+  longevity: string
   reason: string
 }
 
@@ -29,8 +30,15 @@ export type SkinPrepRecommendation = {
   reason: string
 }
 
+export type CustomPerfumeAnalysis = {
+  name: string
+  longevity: string
+  verdict: string
+}
+
 export type CurationResult = {
   retentionProfile: string
   skinPrep: SkinPrepRecommendation
+  customPerfumeAnalysis?: CustomPerfumeAnalysis
   recommendations: FragranceRecommendation[]
 }
