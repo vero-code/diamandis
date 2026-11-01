@@ -423,6 +423,61 @@
   color: var(--gold);
 }
 
+.product-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.product-visual-prep {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.product-svg {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  display: block;
+}
+
+.prep-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.prep-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fragrance-card {
+  gap: 10px;
+}
+
+.fragrance-notes {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+@media (max-width: 640px) {
+  .prep-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-visual-prep {
+    width: 100%;
+  }
+}
+
 @media (max-width: 960px) {
   .workspace-grid {
     grid-template-columns: 1fr;

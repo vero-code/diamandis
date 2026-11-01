@@ -1,4 +1,5 @@
 import type { CurationResult } from '../types'
+import { ProductVisual } from './ProductVisual'
 
 type FragranceRecommendationsProps = {
   curation: CurationResult | null
@@ -13,7 +14,7 @@ export function FragranceRecommendations({
 
   return (
     <section className="panel" aria-live="polite">
-      <h2>Skin Retention Profile & Fragrance Curation</h2>
+      <h2>Skin Retention Profile &amp; Fragrance Curation</h2>
       <p className="note">
         Formulation heuristic based on your YouCam skin metrics and scent
         preference. For cosmetic and fragrance shopping guidance only, not a
@@ -29,20 +30,32 @@ export function FragranceRecommendations({
             <p>{curation.retentionProfile}</p>
           </article>
 
-          <p className="notes">Step 1 · Skin-Prep Layering Base (Matched to Skin Metrics)</p>
-          <article className="metric">
-            <h3>{curation.skinPrep.name}</h3>
-            <p className="note">{curation.skinPrep.focus}</p>
-            <p>{curation.skinPrep.reason}</p>
+          <p className="notes">
+            Step 1 · Skin-Prep Layering Base (Matched to Skin Metrics)
+          </p>
+          <article className="metric prep-card">
+            <ProductVisual name={curation.skinPrep.name} variant="prep" />
+            <div className="prep-card-body">
+              <h3>{curation.skinPrep.name}</h3>
+              <p className="note">{curation.skinPrep.focus}</p>
+              <p>{curation.skinPrep.reason}</p>
+            </div>
           </article>
 
-          <p className="notes">Step 2 · Curated Perfumes (Matched to Skin Chemistry & Taste)</p>
+          <p className="notes">
+            Step 2 · Curated Perfumes (Matched to Skin Chemistry &amp; Taste)
+          </p>
           <div className="metrics">
             {curation.recommendations.map((fragrance) => (
-              <article className="metric" key={fragrance.name}>
+              <article className="metric fragrance-card" key={fragrance.name}>
+                <ProductVisual
+                  name={fragrance.name}
+                  variant="perfume"
+                  concentration={fragrance.concentration}
+                />
                 <h3>{fragrance.name}</h3>
                 <p className="notes">{fragrance.concentration}</p>
-                <p>{fragrance.notes}</p>
+                <p className="fragrance-notes">{fragrance.notes}</p>
                 <p>{fragrance.reason}</p>
               </article>
             ))}
