@@ -103,19 +103,6 @@ export function MolecularBackground() {
         if (p.y < 0) p.y = height
         if (p.y > height) p.y = 0
 
-        // Keep particles outside the central content column
-        const halfBox = Math.min(430, width * 0.42)
-        const centerX = width / 2
-        if (width > 900 && Math.abs(p.x - centerX) < halfBox) {
-          if (p.x < centerX) {
-            p.x = centerX - halfBox
-            p.vx = -Math.abs(p.vx)
-          } else {
-            p.x = centerX + halfBox
-            p.vx = Math.abs(p.vx)
-          }
-        }
-
         const dxm = mouse.x - p.x
         const dym = mouse.y - p.y
         const distMouse = Math.hypot(dxm, dym)

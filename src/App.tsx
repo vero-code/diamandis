@@ -29,6 +29,8 @@ import {
   readJson,
   wait,
 } from './utils/api'
+import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 
 function App() {
   const [customApiKey, setCustomApiKey] = useState('')
@@ -172,38 +174,7 @@ function App() {
     return (
     <main className="app">
       <MolecularBackground />
-      <header className="app-header">
-        <div className="header-top-row">
-          <a href="#/" className="brand-mark">
-            <img
-              src="/logo.png"
-              alt="Diamandis emblem"
-              className="brand-logo"
-            />
-            <span className="eyebrow">DIAMANDIS · SKIN × SCENT</span>
-          </a>
-          <nav className="mode-nav" aria-label="Application mode">
-            <a
-              href="#/"
-              className={`mode-link ${page === 'home' ? 'mode-link-active' : ''}`}
-            >
-              🛍 Shopper View
-            </a>
-            <a
-              href="#/studio"
-              className={`mode-link ${page === 'studio' ? 'mode-link-active' : ''}`}
-            >
-              🏛 Boutique &amp; Judge Studio
-              {customApiKey.trim() ? ' (Custom Key)' : ''}
-            </a>
-          </nav>
-        </div>
-        <h1>Skin-Informed Fragrance Selection</h1>
-        <p>
-          Analyze facial skin metrics via YouCam API and receive editorial
-          fragrance suggestions from our catalog.
-        </p>
-      </header>
+      <Header page={page} hasCustomKey={Boolean(customApiKey.trim())} />
 
       {page === 'privacy' || page === 'terms' ? (
         <LegalPage page={page} />
@@ -246,41 +217,56 @@ function App() {
             metrics.length === 0 &&
             !curation &&
             !recommendationError ? (
-              <section className="panel empty-state-panel">
-                <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
-                <h2>How Skin Chemistry Shapes Scent</h2>
-                <p className="note">
-                  Run the analysis on the left to inspect your YouCam AI zone
-                  masks and receive a personalized fragrance curation.
-                </p>
-                <div className="metrics">
-                  <article className="metric">
-                    <p className="notes">Step 01 · YouCam AI</p>
-                    <h3>Epidermal Diagnostics</h3>
-                    <p>
-                      Measures oiliness, moisture, pores, texture, radiance,
-                      redness, and facial zones (T-Zone &amp; U-Zone) with
-                      visual overlay masks.
-                    </p>
-                  </article>
-                  <article className="metric">
-                    <p className="notes">Step 02 · Skin-Prep Base</p>
-                    <h3>Barrier &amp; Lipid Primer</h3>
-                    <p>
-                      Matches an unscented skincare primer to balance surface
-                      sebum or lock in hydration on your pulse points.
-                    </p>
-                  </article>
-                  <article className="metric">
-                    <p className="notes">Step 03 · Gemini Curation</p>
-                    <h3>Perfume Concentration &amp; Notes</h3>
-                    <p>
-                      Selects three fragrances (EDT, EDP, or Extrait) and explains
-                      how their top and base notes bloom and last on your skin.
-                    </p>
-                  </article>
-                </div>
-              </section>
+              <>
+                <section className="panel empty-state-panel">
+                  <p className="eyebrow">AWAITING BIOMARKER TELEMETRY</p>
+                  <h2>How Skin Chemistry Shapes Scent</h2>
+                  <p className="note">
+                    Run the analysis on the left to inspect your YouCam AI zone
+                    masks and receive a personalized fragrance curation.
+                  </p>
+                  <div className="metrics">
+                    <article className="metric">
+                      <p className="notes">Step 01 · YouCam AI</p>
+                      <h3>Epidermal Diagnostics</h3>
+                      <p>
+                        Measures oiliness, moisture, pores, texture, radiance,
+                        redness, and facial zones (T-Zone &amp; U-Zone) with
+                        visual overlay masks.
+                      </p>
+                    </article>
+                    <article className="metric">
+                      <p className="notes">Step 02 · Skin-Prep Base</p>
+                      <h3>Barrier &amp; Lipid Primer</h3>
+                      <p>
+                        Matches an unscented skincare primer to balance surface
+                        sebum or lock in hydration on your pulse points.
+                      </p>
+                    </article>
+                    <article className="metric">
+                      <p className="notes">Step 03 · Gemini Curation</p>
+                      <h3>Perfume Concentration &amp; Notes</h3>
+                      <p>
+                        Selects three fragrances (EDT, EDP, or Extrait) and explains
+                        how their top and base notes bloom and last on your skin.
+                      </p>
+                    </article>
+                  </div>
+                </section>
+
+                <section className="panel faq-panel">
+                  <p className="eyebrow">FREQUENTLY ASKED QUESTIONS</p>
+                  <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
+                  <div className="faq-list">
+                    {FAQ_ITEMS.map((item) => (
+                      <details key={item.question} className="faq-item">
+                        <summary>{item.question}</summary>
+                        <p>{item.answer}</p>
+                      </details>
+                    ))}
+                  </div>
+                </section>
+              </>
             ) : (
               <>
                 <SkinResults metrics={metrics} />
@@ -298,37 +284,7 @@ function App() {
         </div>
       )}
 
-      {page === 'home' && (
-        <section className="panel faq-panel">
-          <p className="eyebrow">FREQUENTLY ASKED QUESTIONS</p>
-          <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
-          <div className="faq-list">
-            {FAQ_ITEMS.map((item) => (
-              <details key={item.question} className="faq-item">
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <footer className="app-footer">
-        <p>
-          © {new Date().getFullYear()} <strong>DIAMANDIS</strong> · Created by 
-          <a
-            href="https://github.com/vero-code/diamandis"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {' '} Veronika Kashtanova
-            </a>
-        </p>
-        <p>
-          <a href="#/privacy">Privacy Policy</a> ·{' '}
-          <a href="#/terms">Terms of Use</a>
-        </p>
-      </footer>
+       <Footer />
     </main>
   )
 }

@@ -16,36 +16,93 @@
 }
 
 .app {
-  max-width: 1220px;
+  max-width: 100%;
   width: 100%;
-  margin: 0 auto;
-  padding: 48px 28px 64px;
+  margin: 0;
+  padding: 40px 48px 64px;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  box-sizing: border-box;
 }
 
+/* Header */
 .app-header {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-bottom: 16px;
+  gap: 36px;
+  padding-bottom: 28px;
   border-bottom: 1px solid var(--border);
 }
 
-.eyebrow {
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--gold);
+.header-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-.app-header h1 {
-  font-size: 42px;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
+.brand-name {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+}
+
+.header-tech-badge {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tech-dot {
+  opacity: 0.5;
+}
+
+.header-hero {
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-hero h1 {
+  font-size: 46px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.header-desc {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .header-navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-hero h1 {
+    font-size: 32px;
+  }
 }
 
 .panel {
@@ -370,8 +427,8 @@
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: 390px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 32px;
   align-items: start;
 }
 
