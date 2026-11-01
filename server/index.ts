@@ -8,6 +8,11 @@ import {
   fragranceCatalog,
   skinPrepCatalog,
 } from './constants.ts'
+import {
+  buildGeminiPrompt,
+  geminiApiUrl,
+  geminiResponseSchema,
+} from './constants.ts'
 
 config({ path: 'server/.env' })
 
@@ -97,8 +102,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
       : ''
 
   try {
-    const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
+    const response = await fetch(geminiApiUrl,
       {
         method: 'POST',
         headers: {
@@ -107,52 +111,11 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         },
         body: JSON.stringify({
           contents: [{
-            parts: [{
-              text: [
-                'You are a perfumery and skincare formulation advisor for Diamandis.',
-                'Important: In YouCam API, ui_score is a 0-100 skin health score where 100 is optimal/calm and lower scores indicate a stronger concern (e.g., redness 97 means very calm skin with no redness, while oiliness 65 and moisture 65 are moderate concerns).',
-                '- Oily / higher sebum skin naturally retains lipophilic fragrance molecules longer and amplifies heavy base notes (amber, resins, musk), so lighter EDT/EDP concentrations and crisp wood/mineral/tea/fig profiles bloom cleanly without becoming cloying, while pure citrus benefits from an oil-balancing primer.',
-                '- Dry / lower moisture or low-oiliness skin lets volatile top notes evaporate rapidly, so higher concentrations (EDP/Extrait) with fixative base notes (amber, sandalwood, resins, musk) and a lipid-replenishing skin-prep balm help anchor the scent.',
-                '- Texture, pore, and redness scores guide whether a smoothing or soothing barrier primer is needed before applying alcohol-based perfume.',
-                'Tasks:',
-                '1. Write a concise retentionProfile (2 sentences max) explaining how this specific skin profile (citing the actual scores and skin_type) interacts with top/base notes and which perfume concentrations work best on it.',
-                '2. Pick the single best skinPrep from the SkinPrepCatalog based strictly on the skin metrics (NOT the scent preference) and explain why in prepReason.',
-                '3. Recommend 3 fragrances from the FragranceCatalog that best bridge the user scent preference AND this skin retention profile, explaining both how the notes unfold (bloom) AND how long the base notes will last (longevity) on this specific skin.',
-                'Do not make clinical or medical disease claims.',
-                `User scent preference: ${preference || 'No specific preference'}`,
-                `Skin metrics: ${JSON.stringify(metrics)}`,
-                `SkinPrepCatalog: ${JSON.stringify(skinPrepCatalog)}`,
-                `FragranceCatalog: ${JSON.stringify(fragranceCatalog)}`,
-              ].join('\n'),
-            }],
+            parts: [{ text: buildGeminiPrompt(metrics, preference) }],
           }],
           generationConfig: {
             responseMimeType: 'application/json',
-            responseSchema: {
-              type: 'OBJECT',
-              properties: {
-                retentionProfile: { type: 'STRING' },
-                skinPrepName: { type: 'STRING' },
-                prepReason: { type: 'STRING' },
-                recommendations: {
-                  type: 'ARRAY',
-                  items: {
-                    type: 'OBJECT',
-                    properties: {
-                      name: { type: 'STRING' },
-                      reason: { type: 'STRING' },
-                    },
-                    required: ['name', 'reason'],
-                  },
-                },
-              },
-              required: [
-                'retentionProfile',
-                'skinPrepName',
-                'prepReason',
-                'recommendations',
-              ],
-            },
+            responseSchema: geminiResponseSchema,
           },
         }),
         signal: AbortSignal.timeout(30_000),
@@ -223,8 +186,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         !isRecord(row) ||
         typeof row.name !== 'string' ||
         typeof row.reason !== 'string' ||
-        row.reason.trim().length === 0 ||
-        row.reason.length > 350
+        row.reason.trim().length === 0
       ) {
         throw new Error('Gemini returned an invalid recommendation.')
       }
@@ -240,7 +202,7 @@ app.post('/api/fragrance-recommendations', async (req, res) => {
         name: fragrance.name,
         concentration: fragrance.concentration,
         notes: fragrance.notes,
-        reason: row.reason.trim(),
+        reason: row.reason.trim().slice(0, 600),
       }
     })
 
