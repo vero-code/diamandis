@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { AnalysisProgress } from './components/AnalysisProgress'
-import {
-  FragranceRecommendations,
-  type CurationResult,
-} from './components/FragranceRecommendations'
-import { SkinResults, type Metric } from './components/SkinResults'
-import { UploadCard, type LocalFilePayload } from './components/UploadCard'
-import { MolecularBackground } from './components/MolecularBackground'
+import { FragranceRecommendations } from './components/FragranceRecommendations'
 import { LegalPage } from './components/LegalPage'
-
-const exampleUrl =
-  'https://plugins-media.makeupar.com/strapi/assets/skin_analysis_01_5b5defd339.png'
+import { MolecularBackground } from './components/MolecularBackground'
+import { SkinResults } from './components/SkinResults'
+import { UploadCard } from './components/UploadCard'
+import { SCENT_OPTIONS, EXAMPLE_IMAGE_URL } from './constants'
+import type { CurationResult, LocalFilePayload, Metric, Page } from './types'
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
@@ -105,8 +101,6 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-type Page = 'home' | 'privacy' | 'terms'
-
 function getPage(): Page {
   if (window.location.hash === '#/privacy') return 'privacy'
   if (window.location.hash === '#/terms') return 'terms'
@@ -114,9 +108,9 @@ function getPage(): Page {
 }
 
 function App() {
-  const [imageUrl, setImageUrl] = useState(exampleUrl)
+  const [imageUrl, setImageUrl] = useState(EXAMPLE_IMAGE_URL)
   const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
-  const [preference, setPreference] = useState('Fresh citrus and neroli')
+  const [preference, setPreference] = useState(SCENT_OPTIONS[0])
   const [consent, setConsent] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')

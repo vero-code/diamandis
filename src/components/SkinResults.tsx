@@ -1,28 +1,10 @@
 import { useState } from 'react'
-
-export type Metric = {
-  type: string
-  ui_score?: number
-  raw_score?: number
-  score?: number
-  skin_type?: string
-  region?: string
-  mask_url?: string
-}
+import { METRIC_ORDER } from '../constants'
+import type { Metric } from '../types'
 
 type SkinResultsProps = {
   metrics: Metric[]
 }
-
-const displayedTypes = [
-  'moisture',
-  'oiliness',
-  'texture',
-  'pore',
-  'radiance',
-  'redness',
-  'skin_type',
-]
 
 function getMetricInsight(metric: Metric): {
   title: string
@@ -156,8 +138,8 @@ function getMetricInsight(metric: Metric): {
 
 export function SkinResults({ metrics }: SkinResultsProps) {
   const filtered = metrics
-    .filter((item) => displayedTypes.includes(item.type))
-    .sort((a, b) => displayedTypes.indexOf(a.type) - displayedTypes.indexOf(b.type))
+    .filter((item) => METRIC_ORDER.includes(item.type))
+    .sort((a, b) => METRIC_ORDER.indexOf(a.type) - METRIC_ORDER.indexOf(b.type))
 
   // Prefer oiliness or the first metric with a mask_url so a visible mask shows immediately
   const defaultIndex = Math.max(

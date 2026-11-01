@@ -1,21 +1,4 @@
-export type FragranceRecommendation = {
-  name: string
-  concentration: string
-  notes: string
-  reason: string
-}
-
-export type SkinPrepRecommendation = {
-  name: string
-  focus: string
-  reason: string
-}
-
-export type CurationResult = {
-  retentionProfile: string
-  skinPrep: SkinPrepRecommendation
-  recommendations: FragranceRecommendation[]
-}
+import type { CurationResult } from '../types'
 
 type FragranceRecommendationsProps = {
   curation: CurationResult | null

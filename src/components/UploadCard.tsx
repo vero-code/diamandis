@@ -1,10 +1,6 @@
 import type { ChangeEvent } from 'react'
-
-export type LocalFilePayload = {
-  fileName: string
-  contentType: string
-  dataUrl: string
-}
+import { SCENT_OPTIONS } from '../constants'
+import type { LocalFilePayload } from '../types'
 
 type UploadCardProps = {
   imageUrl: string
@@ -18,15 +14,6 @@ type UploadCardProps = {
   onConsentChange: (checked: boolean) => void
   onAnalyze: () => void
 }
-
-const scentOptions = [
-  'Fresh citrus and neroli',
-  'Warm amber and sandalwood',
-  'Soft musk, fig, and vetiver',
-  'Marine mineral and sage',
-  'White tea and jasmine',
-  'Spiced cardamom and smoked cedar',
-]
 
 export function UploadCard({
   imageUrl,
@@ -117,7 +104,7 @@ export function UploadCard({
           value={preference}
           onChange={(e) => onPreferenceChange(e.target.value)}
         >
-          {scentOptions.map((option) => (
+          {SCENT_OPTIONS.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
