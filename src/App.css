@@ -468,32 +468,50 @@
 }
 
 /* 9 Sample Portraits Grid */
-.sample-grid {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 6px;
-}
-
-.panel button.sample-thumb-btn {
-  padding: 2px;
+.preview-stage {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--bg);
   overflow: hidden;
-  line-height: 0;
+  border: 1px solid var(--border);
 }
 
-.panel button.sample-thumb-btn.sample-thumb-active {
-  border: 2px solid var(--primary);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.45);
+.preview-switcher {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: rgba(11, 59, 44, 0.88);
+  border: 1px solid var(--gold);
+  color: #fbf9f5;
 }
 
-.sample-thumb-img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 2px;
-  display: block;
+.panel button.preview-nav-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  background: transparent;
+  color: var(--gold-bright);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+}
+
+.panel button.preview-nav-btn:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.18);
+}
+
+.preview-counter {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fbf9f5;
 }
 
 /* Preferred scent profile hint & badge */

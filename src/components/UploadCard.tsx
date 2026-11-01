@@ -60,37 +60,21 @@ export function UploadCard({
     reader.readAsDataURL(file)
   }
 
+  const currentSampleIndex = localFile
+    ? -1
+    : SAMPLE_PORTRAITS.indexOf(imageUrl)
+
+  function cycleSample(step: number) {
+    const baseIndex = currentSampleIndex >= 0 ? currentSampleIndex : 0
+    const nextIndex =
+      (baseIndex + step + SAMPLE_PORTRAITS.length) % SAMPLE_PORTRAITS.length
+    onLocalFileChange(null)
+    onImageUrlChange(SAMPLE_PORTRAITS[nextIndex])
+  }
+
   return (
     <section className="panel">
       <h2>1. Photo &amp; Scent Preferences</h2>
-
-      <div className="field">
-        <label>Quick-select a YouCam sample portrait</label>
-        <div className="sample-grid">
-          {SAMPLE_PORTRAITS.map((sample) => {
-            const isSelected = !localFile && imageUrl === sample.fullUrl
-            return (
-              <button
-                key={sample.id}
-                type="button"
-                className={`sample-thumb-btn ${isSelected ? 'sample-thumb-active' : ''}`}
-                onClick={() => {
-                  onLocalFileChange(null)
-                  onImageUrlChange(sample.fullUrl)
-                }}
-                title={`Select ${sample.label}`}
-              >
-                <img
-                  src={sample.thumbUrl}
-                  alt={sample.label}
-                  className="sample-thumb-img"
-                  referrerPolicy="no-referrer"
-                />
-              </button>
-            )
-          })}
-        </div>
-      </div>
 
       <div className="field">
         <label htmlFor="local-file">
@@ -124,12 +108,37 @@ export function UploadCard({
 
       {previewSrc && (
         <div className="preview-box">
-          <img
-            src={previewSrc}
-            alt="Selected portrait preview"
-            className="preview-img"
-            referrerPolicy="no-referrer"
-          />
+          <div className="preview-stage">
+            <img
+              src={previewSrc}
+              alt="Selected portrait preview"
+              className="preview-img"
+              referrerPolicy="no-referrer"
+            />
+            <div className="preview-switcher">
+              <button
+                type="button"
+                className="preview-nav-btn"
+                onClick={() => cycleSample(-1)}
+                title="Previous sample portrait"
+              >
+                ‹ Prev
+              </button>
+              <span className="preview-counter">
+                {currentSampleIndex >= 0
+                  ? `Sample ${currentSampleIndex + 1} / ${SAMPLE_PORTRAITS.length}`
+                  : 'Custom Photo'}
+              </span>
+              <button
+                type="button"
+                className="preview-nav-btn"
+                onClick={() => cycleSample(1)}
+                title="Next sample portrait"
+              >
+                Next ›
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

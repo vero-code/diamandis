@@ -23,7 +23,7 @@ function App() {
   const [localFile, setLocalFile] = useState<LocalFilePayload | null>(null)
   const [preference, setPreference] = useState(SCENT_OPTIONS[0])
   const [customPerfume, setCustomPerfume] = useState('')
-  const [consent, setConsent] = useState(true)
+  const [consent, setConsent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [hasError, setHasError] = useState(false)
