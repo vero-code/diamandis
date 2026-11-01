@@ -6,7 +6,7 @@ import { LegalPage } from './components/LegalPage'
 import { MolecularBackground } from './components/MolecularBackground'
 import { SkinResults } from './components/SkinResults'
 import { UploadCard } from './components/UploadCard'
-import { SCENT_OPTIONS, EXAMPLE_IMAGE_URL } from './constants'
+import { SCENT_OPTIONS, EXAMPLE_IMAGE_URL, FAQ_ITEMS } from './constants'
 import type { CurationResult, LocalFilePayload, Metric, Page } from './types'
 import {
   asRecord,
@@ -212,6 +212,21 @@ function App() {
             )}
           </div>
         </div>
+      )}
+
+      {page === 'home' && (
+        <section className="panel faq-panel">
+          <p className="eyebrow">FREQUENTLY ASKED QUESTIONS</p>
+          <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
+          <div className="faq-list">
+            {FAQ_ITEMS.map((item) => (
+              <details key={item.question} className="faq-item">
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
       )}
 
       <footer className="app-footer">
