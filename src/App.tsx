@@ -84,7 +84,7 @@ function App() {
         if (status === 'success') {
           const analysisMetrics = getMetrics(statusData)
           setMetrics(analysisMetrics)
-          setMessage('Generating fragrance recommendations…')
+          setMessage('')
 
           try {
             const response = await fetch('/api/fragrance-recommendations', {
@@ -98,15 +98,11 @@ function App() {
             })
 
             setCuration(getCuration(await readJson(response)))
-            setMessage('Analysis and fragrance curation completed.')
           } catch (error) {
             setRecommendationError(
               error instanceof Error
                 ? error.message
                 : 'Could not generate fragrance recommendations.',
-            )
-            setMessage(
-              'Skin analysis completed, but recommendations are unavailable.',
             )
           }
 
