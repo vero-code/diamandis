@@ -174,7 +174,14 @@ function App() {
       <MolecularBackground />
       <header className="app-header">
         <div className="header-top-row">
-          <p className="eyebrow">DIAMANDIS · SKIN × SCENT</p>
+          <a href="#/" className="brand-mark">
+            <img
+              src="/logo.png"
+              alt="Diamandis emblem"
+              className="brand-logo"
+            />
+            <span className="eyebrow">DIAMANDIS · SKIN × SCENT</span>
+          </a>
           <nav className="mode-nav" aria-label="Application mode">
             <a
               href="#/"
