@@ -1,8 +1,10 @@
+import '../styles/footer.css';
+
 export function Footer() {
   return (
     <footer className="app-footer">
       <p>
-        © {new Date().getFullYear()} <strong>DIAMANDIS</strong> · Created by
+        <strong>DIAMANDIS</strong> © {new Date().getFullYear()} · Author:
         <a href="https://github.com/vero-code/diamandis" target="_blank" rel="noreferrer">
           {' '}
           Veronika Kashtanova
