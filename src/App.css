@@ -18,11 +18,13 @@
   max-width: 100%;
   width: 100%;
   margin: 0;
-  padding: 40px 48px 64px;
+  padding: 0 48px;
   display: flex;
   flex-direction: column;
   gap: 28px;
   box-sizing: border-box;
+  flex: 1;
+  min-height: 100svh;
 }
 
 .panel {
@@ -354,7 +356,7 @@
 
 .workspace-left {
   position: sticky;
-  top: 24px;
+  top: 140px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -369,35 +371,6 @@
 .empty-state-panel {
   border-style: dashed;
   background: var(--surface-low);
-}
-
-.app-footer {
-  margin-top: 20px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-}
-
-.app-footer strong {
-  color: var(--text-h);
-}
-
-.app-footer a {
-  color: var(--primary);
-  font-weight: 600;
-  text-decoration: none;
-  border-bottom: 1px solid var(--gold);
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.app-footer a:hover {
-  color: var(--gold);
 }
 
 .product-visual {

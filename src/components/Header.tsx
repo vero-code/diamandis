@@ -29,10 +29,10 @@ export function Header({ page, hasCustomKey }: HeaderProps) {
 
         <nav className="mode-nav" aria-label="Application mode">
           <a href="#/" className={`mode-link ${page === 'home' ? 'mode-link-active' : ''}`}>
-            🛍 Shopper
+            Shopper
           </a>
           <a href="#/studio" className={`mode-link ${page === 'studio' ? 'mode-link-active' : ''}`}>
-            🏛 Boutique
+            Boutique
             {hasCustomKey ? ' (Custom Key)' : ''}
           </a>
         </nav>
