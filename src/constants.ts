@@ -35,14 +35,14 @@ export const METRIC_ORDER = [
 
 export const FAQ_ITEMS = [
   {
-    question: 'How does skin chemistry affect perfume longevity and note projection?',
+    question: 'Why analyze facial skin if fragrance is applied to pulse points?',
     answer:
-      'Fragrance molecules are lipophilic — they bind to epidermal sebum. Higher-sebum (oily) skin anchors base notes longer and amplifies warm accords, whereas dry or dehydrated skin lets volatile top notes flash off rapidly unless prepped with a lipid or humectant barrier.',
+      'Facial epidermis (specifically T-zone and U-zone biomarkers) serves as an accurate non-invasive proxy for your systemic lipid production and stratum corneum hydration. Diamandis uses these diagnostic metrics to prescribe the ideal pulse-point priming base before fragrance application.',
   },
   {
     question: 'How does “Preferred scent profile” interact with my skin metrics?',
     answer:
-      'Step 1 (Skin-Prep Layering Base) is selected strictly from your YouCam skin biomarkers (oiliness, moisture, texture, pores, redness) and ignores scent taste. Step 2 (Curated Perfumes) bridges both: Gemini selects catalog fragrances that match your olfactory preference while suiting your skin’s retention profile.',
+      'Step 1 is selected strictly from your YouCam skin biomarkers (moisture, oiliness, texture, pores, radiance, redness, skin type) and ignores scent taste. Step 2 and 3 bridges both: Gemini selects catalog fragrances that match your olfactory preference while suiting your skin’s retention profile.',
   },
   {
     question: 'Can I test a perfume I already own?',
@@ -52,7 +52,7 @@ export const FAQ_ITEMS = [
   {
     question: 'What happens if I upload a photo without a clear face?',
     answer:
-      'The YouCam Skin Analysis AI requires a single, well-lit, front-facing face. If no face is detected (error_no_face), multiple people are in frame (error_multiple_people), or the angle is too extreme, the API stops and prompts you to try a clear portrait.',
+      'The YouCam Skin Analysis AI requires a single, well-lit, front-facing face. If no face is detected, multiple people are in frame, or the angle is too extreme, the API stops and prompts you to try a clear portrait.',
   },
 ]
 
