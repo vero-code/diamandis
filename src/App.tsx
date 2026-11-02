@@ -168,6 +168,7 @@ function App() {
       )
     } finally {
       setLoading(false)
+      setConsent(false)
     }
   }
 
