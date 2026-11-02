@@ -11,7 +11,7 @@ import {
   geminiApiUrl,
   geminiResponseSchema,
   skinPrepCatalog,
-} from './constants.ts'
+} from './constants.js'
 
 // Loads server/.env locally; on Vercel, environment variables are injected automatically
 config({ path: 'server/.env' })
