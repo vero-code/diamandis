@@ -28,7 +28,7 @@ export function Header({ page, bagItems = [], onClearBag }: HeaderProps) {
           <span className="hero-sep">—</span>
           <p className="header-desc">
             Analyze facial biomarkers with YouCam Skin AI to understand fragrance evaporation,
-            longevity, and curated pulse-point layering powered by Gemini.
+            longevity, and curated pulse-point layering.
           </p>
         </div>
 
@@ -46,9 +46,25 @@ export function Header({ page, bagItems = [], onClearBag }: HeaderProps) {
               type="button"
               className={`mode-link header-bag-btn ${bagItems.length > 0 ? 'header-bag-btn-active' : ''}`}
               onClick={() => setIsBagOpen((prev) => !prev)}
-              aria-label="Shopping bag"
+              aria-label={`Shopping bag, ${bagItems.length} items`}
+              title="Shopping Bag"
             >
-              Bag {bagItems.length > 0 && <span className="bag-count">({bagItems.length})</span>}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              {bagItems.length > 0 && <span className="bag-count">{bagItems.length}</span>}
             </button>
             {isBagOpen && (
               <div className="header-bag-dropdown">
