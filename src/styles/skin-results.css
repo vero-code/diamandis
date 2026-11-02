@@ -93,12 +93,32 @@
   margin: 0;
 }
 
-.skin-notes {
+/* Add to bag */
+.panel button.buy-flacon-btn {
+  align-self: stretch;
+  margin-top: auto;
+  padding: 10px 14px;
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gold);
+  background: var(--surface);
+  color: var(--primary);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.panel button.buy-flacon-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--gold-bright);
+}
+
+.panel button.buy-flacon-btn-added,
+.panel button.buy-flacon-btn-added:hover:not(:disabled) {
+  background: var(--primary-deep);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
 }
 
 @media (max-width: 1560px) {

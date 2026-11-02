@@ -126,7 +126,7 @@ export function SkinResults({ metrics }: SkinResultsProps) {
 
       {/* Bottom Row */}
       <article className="metric insight-box skin-physics-banner">
-        <p className="skin-notes">Olfactory Physics · {insight.title}</p>
+        <p className="notes">Olfactory Physics · {insight.title}</p>
         <div className="skin-physics-grid">
           <div className="physics-col">
             <p className="physics-label">Why this metric matters:</p>

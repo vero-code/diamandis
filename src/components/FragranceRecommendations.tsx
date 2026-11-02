@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CurationResult } from '../types'
 import { ProductVisual } from './ProductVisual'
 
@@ -12,6 +13,13 @@ export function FragranceRecommendations({
   error,
   loading = false,
 }: FragranceRecommendationsProps) {
+  const [addedBag, setAddedBag] = useState<string | null>(null)
+
+  function handleBuy(perfumeName: string) {
+    setAddedBag(perfumeName)
+    setTimeout(() => setAddedBag(null), 2500)
+  }
+
   if (loading && !curation) {
     return (
       <section className="panel loading-curation-panel" aria-live="polite">
@@ -109,6 +117,16 @@ export function FragranceRecommendations({
                   ))}
                 </div>
                 <p>{fragrance.reason}</p>
+
+                <button
+                  type="button"
+                  className={`buy-flacon-btn ${addedBag === fragrance.name ? 'buy-flacon-btn-added' : ''}`}
+                  onClick={() => handleBuy(fragrance.name)}
+                >
+                  {addedBag === fragrance.name
+                    ? '✓ Added to Bag'
+                    : 'Add to Bag · 50ml Flacon'}
+                </button>
               </article>
             ))}
           </div>
