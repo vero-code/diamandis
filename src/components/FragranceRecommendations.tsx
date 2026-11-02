@@ -38,7 +38,7 @@ export function FragranceRecommendations({
 
   return (
     <section className="panel" aria-live="polite">
-      <h2>3. Skin Retention Profile &amp; Fragrance Curation</h2>
+      <h2>Skin Retention Profile &amp; Fragrance Curation</h2>
       <p className="note">
         Formulation heuristic based on your YouCam skin metrics and scent
         preference. For cosmetic and fragrance shopping guidance only, not a

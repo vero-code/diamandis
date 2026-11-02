@@ -727,7 +727,7 @@
 
 .skin-age-badge {
   font-family: var(--serif);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
   color: var(--primary);
   background: var(--surface-low);

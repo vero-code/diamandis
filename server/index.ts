@@ -23,7 +23,7 @@ function getApiKey(overrideKey?: string): string {
   const key = (overrideKey?.trim() || process.env.PERFECTCORP_API_KEY)?.trim()
   if (!key) {
     throw new Error(
-      'YouCam API key is not configured. Please add your key in "🏛 Boutique & Judge Studio".',
+      'YouCam API key is not configured. Please add your key in "Boutique".',
     )
   }
   return key.startsWith('Bearer ') ? key : `Bearer ${key}`

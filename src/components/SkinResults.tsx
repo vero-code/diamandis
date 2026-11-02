@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import '../styles/skin-results.css';
 import { METRIC_ORDER } from '../constants'
 import type { Metric } from '../types'
 import { getMetricInsight } from '../utils/metricInsights'
+
 
 type SkinResultsProps = {
   metrics: Metric[]
@@ -53,89 +55,86 @@ export function SkinResults({ metrics }: SkinResultsProps) {
       </div>
 
       <p className="note">
-        Click any metric card below to switch the YouCam AI zone mask on your
-        portrait and see how it shapes fragrance evaporation and longevity.
+        Click any metric card below to project its YouCam AI zone mask
+        onto your portrait and inspect epidermal retention physics.
       </p>
 
-      <div className="metrics">
-        {filtered.map((item, index) => {
-          const isActive = index === activeIndex
-          return (
-            <button
-              type="button"
-              className={`metric metric-interactive ${isActive ? 'metric-active' : ''}`}
-              key={`${item.type}-${item.region ?? index}`}
-              onClick={() => setSelectedIndex(index)}
-            >
-              <div className="metric-header">
-                <h3>
-                  {item.type.replaceAll('_', ' ')}
-                  {item.region ? ` · ${item.region.replaceAll('_', ' ')}` : ''}
-                </h3>
-                <span className="metric-badge">
-                  {item.mask_url ? '👁 View' : 'Info'}
-                </span>
-              </div>
-              {item.skin_type && (
-                <p className="metric-value">{item.skin_type}</p>
-              )}
-              {typeof item.ui_score === 'number' && (
-                <p className="metric-value">Score: {item.ui_score} / 100</p>
-              )}
-            </button>
-          )
-        })}
+      {/* Top Row */}
+      <div className="skin-results-top">
+        <div className="skin-metrics-grid">
+          {filtered.map((item, index) => {
+            const isActive = index === activeIndex
+            return (
+              <button
+                type="button"
+                className={`metric metric-interactive ${isActive ? 'metric-active' : ''}`}
+                key={`${item.type}-${item.region ?? index}`}
+                onClick={() => setSelectedIndex(index)}
+              >
+                <div className="metric-header">
+                  <h3>
+                    {item.type.replaceAll('_', ' ')}
+                    {item.region ? ` · ${item.region.replaceAll('_', ' ')}` : ''}
+                  </h3>
+                  <span className="metric-badge">
+                    {item.mask_url ? '👁 View' : 'Info'}
+                  </span>
+                </div>
+                {item.skin_type && (
+                  <p className="metric-value">{item.skin_type}</p>
+                )}
+                {typeof item.ui_score === 'number' && (
+                  <p className="metric-value">Score: {item.ui_score} / 100</p>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {(baseImageUrl || activeMetric.mask_url) && (
+          <div className="skin-portrait-card">
+            <div className="mask-stage">
+              <img
+                src={baseImageUrl ?? activeMetric.mask_url}
+                alt="YouCam analyzed portrait"
+                className="mask-base-img"
+                referrerPolicy="no-referrer"
+              />
+              {showMask &&
+                activeMetric.mask_url &&
+                activeMetric.mask_url !== baseImageUrl && (
+                  <img
+                    src={activeMetric.mask_url}
+                    alt={`${activeMetric.type} diagnostic mask`}
+                    className="mask-overlay-img"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+            </div>
+            {activeMetric.mask_url && baseImageUrl && (
+              <button
+                type="button"
+                className="mask-toggle-btn"
+                onClick={() => setShowMask((prev) => !prev)}
+              >
+                {showMask ? 'Hide AI Mask Overlay' : 'Show AI Mask Overlay'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      <article className="metric insight-box">
-        <div className="insight-layout">
-          {(baseImageUrl || activeMetric.mask_url) && (
-            <div className="mask-column">
-              <div className="mask-stage">
-                <img
-                  src={baseImageUrl ?? activeMetric.mask_url}
-                  alt="YouCam analyzed portrait"
-                  className="mask-base-img"
-                  referrerPolicy="no-referrer"
-                />
-                {showMask &&
-                  activeMetric.mask_url &&
-                  activeMetric.mask_url !== baseImageUrl && (
-                    <img
-                      src={activeMetric.mask_url}
-                      alt={`${activeMetric.type} diagnostic mask`}
-                      className="mask-overlay-img"
-                      referrerPolicy="no-referrer"
-                    />
-                  )}
-                {showMask && (
-                  <div className="mask-hint-overlay">
-                    <span className="mask-hint-sub">
-                      ↑ Click any metric card to switch
-                    </span>
-                  </div>
-                )}
-              </div>
-              {activeMetric.mask_url && baseImageUrl && (
-                <button
-                  type="button"
-                  className="mask-toggle-btn"
-                  onClick={() => setShowMask((prev) => !prev)}
-                >
-                  {showMask ? 'Hide AI Mask Overlay' : 'Show AI Mask Overlay'}
-                </button>
-              )}
-            </div>
-          )}
-
-          <div className="insight-text">
-            <p className="notes">Olfactory Physics · {insight.title}</p>
-            <p>
-              <strong>Why this metric matters:</strong> {insight.physics}
-            </p>
-            <p>
-              <strong>What your reading means:</strong> {insight.reading}
-            </p>
+      {/* Bottom Row */}
+      <article className="metric insight-box skin-physics-banner">
+        <p className="notes">Olfactory Physics · {insight.title}</p>
+        <div className="skin-physics-grid">
+          <div className="physics-col">
+            <p className="physics-label">Why this metric matters:</p>
+            <p className="physics-desc">{insight.physics}</p>
+          </div>
+          <div className="physics-col">
+            <p className="physics-label">What your reading means:</p>
+            <p className="physics-desc">{insight.reading}</p>
           </div>
         </div>
       </article>
