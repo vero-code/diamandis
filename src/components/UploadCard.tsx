@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent, type DragEvent } from 'react'
+import '../styles/upload-card.css';
 import { SAMPLE_PORTRAITS, SCENT_OPTIONS } from '../constants'
 import type { LocalFilePayload } from '../types'
 
@@ -216,17 +217,23 @@ export function UploadCard({
         <div className="label-with-hint">
           <label htmlFor="scent-preference">Preferred scent profile</label>
         </div>
-        <select
-          id="scent-preference"
-          value={preference}
-          onChange={(e) => onPreferenceChange(e.target.value)}
-        >
-          {SCENT_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <div className="select-wrapper">
+          <select
+            id="scent-preference"
+            value={preference}
+            onChange={(e) => {
+              onPreferenceChange(e.target.value);
+              e.target.blur();
+            }}
+          >
+            {SCENT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <span className="select-arrow" aria-hidden="true">▾</span>
+        </div>
         <p className="field-hint">
           Perfume picks balance this profile with your skin metrics. Skin-prep is based on skin metrics only.
         </p>

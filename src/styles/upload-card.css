@@ -1,0 +1,94 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-h);
+}
+
+.field input,
+.field select {
+  font: inherit;
+  font-size: var(--text-base);
+  padding: 11px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(11, 59, 44, 0.08);
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 36px;
+  width: 100%;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.select-wrapper:focus-within .select-arrow {
+  transform: translateY(-50%) rotate(180deg);
+  color: var(--gold);
+}
+
+.preview-box {
+  display: flex;
+  justify-content: center;
+  background: var(--surface-low);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+}
+
+.preview-img {
+  max-height: 240px;
+  max-width: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--text-sm);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  margin-top: 4px;
+  accent-color: var(--primary);
+}
