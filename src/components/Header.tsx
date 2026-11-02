@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import '../styles/header.css';
 import type { Page } from '../types';
 
 type HeaderProps = {
   page: Page;
   hasCustomKey: boolean;
+  bagItems?: string[];
+  onClearBag?: () => void;
 };
 
-export function Header({ page, hasCustomKey }: HeaderProps) {
+export function Header({ page, bagItems = [], onClearBag }: HeaderProps) {
+  const [isBagOpen, setIsBagOpen] = useState(false);
+
   return (
     <header className="app-header">
       <div className="header-navbar">
@@ -34,6 +39,54 @@ export function Header({ page, hasCustomKey }: HeaderProps) {
           <a href="#/studio" className={`mode-link ${page === 'studio' ? 'mode-link-active' : ''}`}>
             Boutique
           </a>
+
+          {/* Bag Dropdown */}
+          <div className="header-bag-wrapper">
+            <button
+              type="button"
+              className={`mode-link header-bag-btn ${bagItems.length > 0 ? 'header-bag-btn-active' : ''}`}
+              onClick={() => setIsBagOpen((prev) => !prev)}
+              aria-label="Shopping bag"
+            >
+              Bag {bagItems.length > 0 && <span className="bag-count">({bagItems.length})</span>}
+            </button>
+            {isBagOpen && (
+              <div className="header-bag-dropdown">
+                <div className="bag-dropdown-header">
+                  <strong>Curated Bag</strong>
+                  {bagItems.length > 0 && (
+                    <button type="button" className="bag-clear-btn" onClick={onClearBag}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+                {bagItems.length === 0 ? (
+                  <p className="bag-empty">Your shopping bag is empty. Add recommended flacons below.</p>
+                ) : (
+                  <ul className="bag-list">
+                    {bagItems.map((item, idx) => (
+                      <li key={`${item}-${idx}`} className="bag-item">
+                        <span>{item}</span>
+                        <span className="bag-item-size">50ml Flacon</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {bagItems.length > 0 && (
+                  <button
+                    type="button"
+                    className="bag-checkout-btn"
+                    onClick={() => {
+                      alert('Checkout simulated: In production, orders route directly to the partner boutique.');
+                      setIsBagOpen(false);
+                    }}
+                  >
+                    Checkout ({bagItems.length})
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </nav>
       </div>
     </header>

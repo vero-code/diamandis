@@ -58,6 +58,7 @@ function App() {
   const [curation, setCuration] = useState<CurationResult | null>(null)
   const [recommendationError, setRecommendationError] = useState('')
   const [page, setPage] = useState<Page>(getPage)
+  const [bagItems, setBagItems] = useState<string[]>([])
 
   function updateCatalog(next: CatalogFragrance[]) {
     setCatalog(next)
@@ -175,7 +176,12 @@ function App() {
     return (
     <main className="app">
       <MolecularBackground />
-      <Header page={page} hasCustomKey={Boolean(customApiKey.trim())} />
+      <Header
+        page={page}
+        hasCustomKey={Boolean(customApiKey.trim())}
+        bagItems={bagItems}
+        onClearBag={() => setBagItems([])}
+      />
 
       {page === 'privacy' || page === 'terms' ? (
         <LegalPage page={page} />
@@ -332,6 +338,7 @@ function App() {
                     curation={curation}
                     error={recommendationError}
                     loading={loading}
+                    onAddToBag={(name) => setBagItems((prev) => [...prev, name])}
                   />
                 )}
               </>

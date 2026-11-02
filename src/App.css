@@ -498,7 +498,7 @@
 }
 
 .field-hint {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--text-muted);
   line-height: 1.4;
 }

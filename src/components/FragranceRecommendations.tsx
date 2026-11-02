@@ -4,19 +4,22 @@ import { ProductVisual } from './ProductVisual'
 
 type FragranceRecommendationsProps = {
   curation: CurationResult | null
-  error: string
+  error?: string
   loading?: boolean
+  onAddToBag?: (perfumeName: string) => void
 }
 
 export function FragranceRecommendations({
   curation,
   error,
   loading = false,
+  onAddToBag,
 }: FragranceRecommendationsProps) {
   const [addedBag, setAddedBag] = useState<string | null>(null)
 
   function handleBuy(perfumeName: string) {
     setAddedBag(perfumeName)
+    onAddToBag?.(perfumeName)
     setTimeout(() => setAddedBag(null), 2500)
   }
 
@@ -26,7 +29,7 @@ export function FragranceRecommendations({
         <div className="status-row">
           <span className="spinner" aria-hidden="true" />
           <div>
-            <p className="eyebrow">GEMINI OLFACTORY ENGINE</p>
+            <p className="eyebrow">OLFACTORY ENGINE</p>
             <h2>Formulating Your Fragrance Curation…</h2>
           </div>
         </div>
