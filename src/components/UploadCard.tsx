@@ -76,7 +76,13 @@ export function UploadCard({
   function handleDrop(e: DragEvent<HTMLDivElement>) {
     e.preventDefault()
     setIsDragging(false)
-    processFile(e.dataTransfer.files?.[0])
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      if (fileInputRef.current) {
+        fileInputRef.current.files = files
+      }
+      processFile(files[0])
+    }
   }
 
   const currentSampleIndex = SAMPLE_PORTRAITS.indexOf(imageUrl)
