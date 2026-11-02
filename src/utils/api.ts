@@ -138,6 +138,9 @@ export function formatYouCamError(errorField: unknown): string {
   if (code.includes('exceed_max_filesize')) {
     return 'Image file size exceeds the YouCam limit. Please use a file under 10 MB.'
   }
+  if (code.includes('below_min_image_size')) {
+    return 'Image resolution is too small (error_below_min_image_size). Please upload a photo at least 480x480 pixels.';
+  }
   return raw
     ? `YouCam could not process this image (${raw}). Please try a clear front-facing portrait.`
     : 'YouCam could not detect a valid face in this image. Please try another portrait.'
