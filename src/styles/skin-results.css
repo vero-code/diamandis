@@ -121,6 +121,60 @@
   border-color: var(--gold-bright);
 }
 
+/* Portrait Skeleton & Smooth Reveal */
+.mask-stage-loading {
+  min-height: 220px;
+  background: var(--surface-low);
+  position: relative;
+}
+
+.mask-skeleton {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  background: linear-gradient(
+    90deg,
+    rgba(197, 160, 89, 0.08) 25%,
+    rgba(197, 160, 89, 0.22) 50%,
+    rgba(197, 160, 89, 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-load 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer-load {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.mask-img-hidden {
+  opacity: 0;
+}
+
+.mask-img-visible {
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+}
+
+.mask-overlay-img {
+  animation: mask-fade-in 0.35s ease-out;
+}
+
+@keyframes mask-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 1560px) {
   .skin-metrics-grid .metric-badge {
     display: none;

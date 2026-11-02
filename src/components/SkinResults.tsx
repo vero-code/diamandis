@@ -22,6 +22,7 @@ export function SkinResults({ metrics }: SkinResultsProps) {
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [showMask, setShowMask] = useState(true)
+  const [baseImageLoaded, setBaseImageLoaded] = useState(false)
 
   if (filtered.length === 0) return null
 
@@ -93,14 +94,17 @@ export function SkinResults({ metrics }: SkinResultsProps) {
 
         {(baseImageUrl || activeMetric.mask_url) && (
           <div className="skin-portrait-card">
-            <div className="mask-stage">
+            <div className={`mask-stage ${!baseImageLoaded ? 'mask-stage-loading' : ''}`}>
+              {!baseImageLoaded && <div className="mask-skeleton" aria-hidden="true" />}
               <img
                 src={baseImageUrl ?? activeMetric.mask_url}
                 alt="YouCam analyzed portrait"
-                className="mask-base-img"
+                className={`mask-base-img ${baseImageLoaded ? 'mask-img-visible' : 'mask-img-hidden'}`}
                 referrerPolicy="no-referrer"
+                onLoad={() => setBaseImageLoaded(true)}
               />
               {showMask &&
+                baseImageLoaded &&
                 activeMetric.mask_url &&
                 activeMetric.mask_url !== baseImageUrl && (
                   <img
