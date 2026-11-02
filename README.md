@@ -1,7 +1,23 @@
 # DIAMANDIS · Skin-Informed Fragrance Selection
 
+<p align="left">
+  <img src="https://img.shields.io/badge/YouCam%20API-Skin%20AI%20v2.1-0b3b2c?style=flat&logoColor=c5a059" alt="YouCam Skin AI API" />
+  <img src="https://img.shields.io/badge/Google%20Gemini-3.8%20Flash-4285F4?style=flat&logo=google&logoColor=white" alt="Google Gemini" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
+
 > A luxury beauty-tech application built for the **YouCam API Skin AI & eCommerce VTO Hackathon**.  
 > Diamandis diagnoses facial biomarkers with **Perfect Corp. YouCam Skin AI** to understand fragrance evaporation kinetics, calculate wear-time longevity, and curate a personalized pulse-point fragrance ritual.
+
+---
+
+## Demo Video
+
+[![Diamandis Demo Video](https://img.youtube.com/vi/YdjZDcR0kks/maxresdefault.jpg)](https://youtu.be/YdjZDcR0kks)
+
+> *Demonstrating YouCam Skin AI diagnostic masks, custom judge API key verification, pulse-point priming, and Gemini-curated longevity.*
 
 ---
 
@@ -15,26 +31,22 @@ flowchart TD
         Bag["Curated Bag & eCommerce Flow"]
         Studio["Boutique & Judge Studio (#/studio)"]
     end
-
     subgraph Backend["API Server (Express / Vercel Serverless)"]
         Proxy["API Gateway & Key Resolver"]
         Poller["Asynchronous Task Poller (2s intervals)"]
         PromptBuilder["Olfactory Heuristic & Gemini Prompt Builder"]
     end
-
     subgraph YouCam["Perfect Corp. YouCam APIs"]
         FileAPI["File API v2.0 (/s2s/v2.0/file)"]
         SkinAPI["Skin Analysis API v2.1 (/s2s/v2.1/task/skin-analysis)"]
         CreditAPI["Credit API v1.0 (/s2s/v1.0/client/credit)"]
     end
-
     subgraph Gemini["Google Gemini 3.8 Flash"]
         LLM["Structured JSON Curation & Note Blooming"]
     end
-
     UI -->|Photo URL or Base64| Proxy
     Studio -.->|Custom Judge Key via x-youcam-key| Proxy
-    Proxy -->|Verify Balance (0 units)| CreditAPI
+    Proxy -->|"Verify Balance (0 units)"| CreditAPI
     Proxy -->|Upload File Buffer| FileAPI
     FileAPI -->|src_file_url| SkinAPI
     Proxy -->|Create Diagnostic Task| SkinAPI
