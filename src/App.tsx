@@ -226,28 +226,25 @@ function App() {
                   </p>
                   <div className="metrics">
                     <article className="metric">
-                      <p className="notes">Step 01 · YouCam AI</p>
+                      <p className="notes">Step 01 · YouCam Skin AI</p>
                       <h3>Epidermal Diagnostics</h3>
                       <p>
-                        Measures oiliness, moisture, pores, texture, radiance,
-                        redness, and facial zones (T-Zone &amp; U-Zone) with
-                        visual overlay masks.
+                        Measures moisture, oiliness, texture, pores, radiance, redness, skin type, and facial zones (T-Zone &amp; U-Zone) with real diagnostic overlay masks.
                       </p>
                     </article>
                     <article className="metric">
                       <p className="notes">Step 02 · Skin-Prep Base</p>
-                      <h3>Barrier &amp; Lipid Primer</h3>
+                      <h3>Lipid &amp; Barrier Balancing</h3>
                       <p>
-                        Matches an unscented skincare primer to balance surface
-                        sebum or lock in hydration on your pulse points.
+                        Prescribes an unscented primer base tailored to your skin biomarkers to anchor volatile top notes or balance sebum on pulse points.
                       </p>
                     </article>
                     <article className="metric">
-                      <p className="notes">Step 03 · Gemini Curation</p>
-                      <h3>Perfume Concentration &amp; Notes</h3>
+                      <p className="notes">Step 03 · Olfactory AI Curation</p>
+                      <h3>Fragrance Concentration &amp; Longevity</h3>
                       <p>
-                        Selects three fragrances (EDT, EDP, or Extrait) and explains
-                        how their top and base notes bloom and last on your skin.
+                        Curates three perfumes (EDT, EDP, Extrait), calculates wear-time in hours,
+                        and explains note evolution based on your skin retention profile.
                       </p>
                     </article>
                   </div>
