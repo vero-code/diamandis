@@ -11,7 +11,6 @@ import {
   DEFAULT_FRAGRANCE_CATALOG,
   SCENT_OPTIONS,
   EXAMPLE_IMAGE_URL,
-  FAQ_ITEMS
 } from './constants'
 import type {
   CatalogFragrance,
@@ -31,6 +30,7 @@ import {
 } from './utils/api'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
+import { FaqSection } from './components/FaqSection'
 
 function App() {
   const [customApiKey, setCustomApiKey] = useState('')
@@ -209,6 +209,7 @@ function App() {
               onConsentChange={setConsent}
               onAnalyze={analyze}
             />
+            {metrics.length > 0 && <FaqSection compactTitle />}
           </div>
 
           <div className="workspace-right">
@@ -308,26 +309,7 @@ function App() {
                   </div>
                 </section>
 
-                <details className="panel faq-panel">
-                  <summary className="faq-panel-summary">
-                    <div className="faq-panel-title">
-                      <p className="eyebrow">QUESTIONS &amp; ANSWERS</p>
-                      <h2>Skin Chemistry &amp; AI Diagnostics FAQ</h2>
-                    </div>
-                    <span className="faq-toggle-badge" aria-hidden="true">
-                      FAQ List ▾
-                    </span>
-                  </summary>
-
-                  <div className="faq-list">
-                    {FAQ_ITEMS.map((item) => (
-                      <details key={item.question} className="faq-item">
-                        <summary>{item.question}</summary>
-                        <p>{item.answer}</p>
-                      </details>
-                    ))}
-                  </div>
-                </details>
+                <FaqSection />
               </>
             ) : (
               <>
