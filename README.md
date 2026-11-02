@@ -1,49 +1,136 @@
-# Diamandis · Skin-Informed Fragrance Selection
+# DIAMANDIS · Skin-Informed Fragrance Selection
 
-Diamandis connects facial skin diagnostics from the **Perfect Corp. YouCam Skin Analysis API** with editorial fragrance curation powered by **Google Gemini**.
+> A luxury beauty-tech application built for the **YouCam API Skin AI & eCommerce VTO Hackathon**.  
+> Diamandis diagnoses facial biomarkers with **Perfect Corp. YouCam Skin AI** to understand fragrance evaporation kinetics, calculate wear-time longevity, and curate a personalized pulse-point fragrance ritual.
 
-## How It Works
+---
 
-1. **Photo Input & Consent:** Upload a local portrait photo (JPG/PNG via the YouCam S2S v2.0 File API) or provide a public HTTPS image URL, and select a preferred scent profile.
-2. **YouCam Skin Analysis (`v2.1`):** The Express server creates an asynchronous task at `/s2s/v2.1/task/skin-analysis` and polls for completion, extracting `moisture`, `oiliness`, `texture`, and regional `skin_type` (`whole`, `t_zone`, `u_zone`).
-3. **Editorial Fragrance Curation:** The backend passes the returned skin metrics and user scent preference to Gemini to select up to 3 fragrances from the Diamandis catalog with transparent, non-medical explanations.
+## Architecture & Data Flow
 
-> **Disclaimer:** Skin metrics and fragrance suggestions are provided for editorial and shopping reference only. They are not medical diagnoses and do not scientifically measure or guarantee fragrance longevity.
+```mermaid
+flowchart TD
+    subgraph Client["Frontend (React 19 + Vite)"]
+        UI["Upload Card / Sample Switcher"]
+        Masks["Interactive SVG/Canvas Zone Masks Overlay"]
+        Bag["Curated Bag & eCommerce Flow"]
+        Studio["Boutique & Judge Studio (#/studio)"]
+    end
 
-## How "Preferred Scent Profile" vs. Skin Metrics Influences the AI
+    subgraph Backend["API Server (Express / Vercel Serverless)"]
+        Proxy["API Gateway & Key Resolver"]
+        Poller["Asynchronous Task Poller (2s intervals)"]
+        PromptBuilder["Olfactory Heuristic & Gemini Prompt Builder"]
+    end
 
-Diamandis separates skincare chemistry from personal olfactory taste so recommendations stay both scientifically grounded and wearable:
+    subgraph YouCam["Perfect Corp. YouCam APIs"]
+        FileAPI["File API v2.0 (/s2s/v2.0/file)"]
+        SkinAPI["Skin Analysis API v2.1 (/s2s/v2.1/task/skin-analysis)"]
+        CreditAPI["Credit API v1.0 (/s2s/v1.0/client/credit)"]
+    end
 
-- **Step 1 · Skin-Prep Layering Base (`skinPrep`):** Determined **100% by your YouCam skin metrics** (`oiliness`, `moisture`, `texture`, `pore`, `redness`, and facial zones). It does **not** depend on your chosen scent preference. For example, high sebum (`oiliness < 70`) selects the *Oil-Balancing Niacinamide Gel Primer*, while low hydration selects the *Ceramide & Squalane Lipid Balm*.
-- **Step 2 · Curated Perfumes (`recommendations`):** Bridges your **Preferred Scent Profile** with your **Skin Scent Retention Profile**. Gemini prioritizes catalog fragrances that match your chosen notes (e.g., *Citrus Atelier* for *Fresh citrus and neroli*, or *Quiet Woods* for *Soft musk, fig, and vetiver*) while selecting concentrations (`EDT`, `EDP`, `Extrait`) and base notes that hold best on your skin type and estimating wear-time longevity in hours.
-- **Personal Bottle Check (Optional):** If you enter a specific perfume you already own (e.g., *Elixir de Pitaya*), Gemini evaluates how its note pyramid interacts with your measured skin biomarkers and how to prep your pulse points before spraying.
+    subgraph Gemini["Google Gemini 3.8 Flash"]
+        LLM["Structured JSON Curation & Note Blooming"]
+    end
 
-## Prerequisites
+    UI -->|Photo URL or Base64| Proxy
+    Studio -.->|Custom Judge Key via x-youcam-key| Proxy
+    Proxy -->|Verify Balance (0 units)| CreditAPI
+    Proxy -->|Upload File Buffer| FileAPI
+    FileAPI -->|src_file_url| SkinAPI
+    Proxy -->|Create Diagnostic Task| SkinAPI
+    SkinAPI -->|task_id| Poller
+    Poller -->|Poll Task Status| SkinAPI
+    SkinAPI -->|Scores, 14 Biomarkers & Zone Masks| Poller
+    Poller -->|Normalized Metrics| Masks
+    Poller -->|Skin Biomarkers + Scent Profile| PromptBuilder
+    PromptBuilder -->|Strict JSON Schema Prompt| LLM
+    LLM -->|Step 1: Skin-Prep + Step 2: Perfumes + Longevity| Bag
+```
+
+---
+
+## YouCam APIs Integrated
+
+Diamandis integrates three Perfect Corp. REST APIs:
+
+1. **YouCam Skin Analysis API (`v2.1`)** (`/s2s/v2.1/task/skin-analysis`):
+   - Asynchronous image processing detecting 7 core metrics across facial regions: `moisture`, `oiliness`, `texture`, `pore`, `radiance`, `redness`, and `skin_type` (`whole`, `t_zone`, `u_zone`).
+   - Retrieves real diagnostic mask overlays (`mask_url`) projected directly onto the user's portrait.
+2. **YouCam File API (`v2.0`)** (`/s2s/v2.0/file`):
+   - Secure temporary upload storage for local user portraits (JPG/PNG).
+3. **YouCam Credit API (`v1.0`)** (`/s2s/v1.0/client/credit`):
+   - Consumes 0 units to verify API key validity and display remaining account units in the Judge Studio.
+
+---
+
+## How Skin Chemistry Shapes Scent (The Olfactory Science)
+
+Fragrance molecules are lipophilic (oil-soluble). The skin's natural lipid film dictates evaporation kinetics, sillage, and longevity:
+
+- **Raoult's Law & Vapor Pressure:** Epidermal lipid matrices lower the vapor pressure of non-polar fragrance compounds ($\log P > 2.5$), slowing diffusion and evaporative flash-off.
+- **Sebaceous Fixation:** Human sebum contains ~12% squalene and ~26% wax esters, acting as natural chemical fixatives for volatile top notes (terpenes, aldehydes).
+- **Pulse-Point Correlation:** The facial U-Zone (jawline and lower cheeks) directly borders neck and behind-the-ear pulse points, providing a precise non-invasive proxy for systemic lipid production.
+
+---
+
+## 2-Step Olfactory Ritual
+
+1. **Step 1 · Skin-Prep Layering Base (`skinPrep`):** Determined **100% by YouCam skin metrics** (`oiliness`, `moisture`, `texture`, `pore`, `redness`). For high-sebum skin, it prescribes the *Oil-Balancing Niacinamide Gel Primer* to keep crisp notes true; for dry skin, it prescribes the *Ceramide & Squalane Lipid Balm* to lock in volatile accords.
+2. **Step 2 · Curated Perfumes (`recommendations`):** Bridges the user's **Preferred Scent Profile** with their **Skin Retention Profile**. Recommends 3 fragrances (`EDT`, `EDP`, `Extrait`), calculates wear-time longevity in hours (e.g., `⏱ 7–9 hours`), and explains note blooming on this specific skin.
+3. **Personal Bottle Check (Optional):** Evaluates how any fragrance the user already owns behaves on their skin metrics.
+
+---
+
+## For Judges: Testing with Your Own YouCam API Key
+
+You can test Diamandis using either the pre-configured server demo key or your own key:
+
+1. Click **🏛 Boutique** in the top navigation bar (or visit `#/studio`).
+2. Paste your Perfect Corp. API key into the **YouCam API Key Override** input.
+3. Click **Verify Key & Check Balance (0 Units)** to verify your account.
+4. Return to **🛍 Shopper** mode — all subsequent analyses will use your custom key via the `x-youcam-key` header without storing it on the server.
+
+---
+
+## Local Setup & Development
+
+### Prerequisites
 
 - Node.js 18+
-- A Perfect Corp. YouCam API key (`PERFECTCORP_API_KEY`)
-- A Google Gemini API key (`GEMINI_API_KEY`)
+- Perfect Corp. YouCam API Key (`PERFECTCORP_API_KEY`)
+- Google Gemini API Key (`GEMINI_API_KEY`)
 
-## Setup & Running Locally
+### Installation
 
-1. Install dependencies:
+1. Clone repository and install dependencies:
    ```bash
+   git clone https://github.com/vero-code/diamandis.git
+   cd diamandis
    npm install
    ```
 
-2. Create `server/.env` from `server/.env.example` and fill in your keys:
+2. Create `server/.env` with your credentials:
    ```env
    PERFECTCORP_API_KEY=your_youcam_api_key
-   PORT=3001
    GEMINI_API_KEY=your_gemini_api_key
+   PORT=3001
    ```
 
-3. Start the backend server (runs on `http://localhost:3001`):
+3. Start the Express API server:
    ```bash
    npm run server
    ```
 
-4. In a second terminal, start the Vite frontend (runs on `http://localhost:5173`):
+4. In a separate terminal, start the Vite client:
    ```bash
    npm run dev
    ```
+   Open `http://localhost:5173` in your browser.
+
+---
+
+## License & Compliance
+
+- Built for the **YouCam API Skin AI & eCommerce VTO Hackathon**.
+- Adheres to the **Official Perfect Corp. API Guidelines**: masks retained up to 2 hours, temporary uploads up to 30 days.
+- **Medical Disclaimer:** Metric scores and fragrance recommendations are provided for cosmetic, sensory, and shopping reference only; they do not constitute medical advice or clinical diagnosis.
