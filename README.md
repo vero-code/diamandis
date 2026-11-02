@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
-> A luxury beauty-tech application built for the **YouCam API Skin AI & eCommerce VTO Hackathon**.  
+> A luxury beauty-tech application built for the [**YouCam API Skin AI & eCommerce VTO Hackathon**](https://devpost.com/software/diamandis).
 > Diamandis diagnoses facial biomarkers with **Perfect Corp. YouCam Skin AI** to understand fragrance evaporation kinetics, calculate wear-time longevity, and curate a personalized pulse-point fragrance ritual.
 
 ---
@@ -63,7 +63,7 @@ flowchart TD
 
 ## YouCam APIs Integrated
 
-Diamandis integrates three Perfect Corp. REST APIs:
+Diamandis is built in strict adherence to the [**Official Perfect Corp. YouCam API Documentation**](https://docs.perfectcorp.com/develop/introduction). It integrates three production REST services:
 
 1. **YouCam Skin Analysis API (`v2.1`)** (`/s2s/v2.1/task/skin-analysis`):
    - Asynchronous image processing detecting 7 core metrics across facial regions: `moisture`, `oiliness`, `texture`, `pore`, `radiance`, `redness`, and `skin_type` (`whole`, `t_zone`, `u_zone`).
@@ -143,6 +143,5 @@ You can test Diamandis using either the pre-configured server demo key or your o
 
 ## License & Compliance
 
-- Built for the **YouCam API Skin AI & eCommerce VTO Hackathon**.
 - Adheres to the **Official Perfect Corp. API Guidelines**: masks retained up to 2 hours, temporary uploads up to 30 days.
 - **Medical Disclaimer:** Metric scores and fragrance recommendations are provided for cosmetic, sensory, and shopping reference only; they do not constitute medical advice or clinical diagnosis.
