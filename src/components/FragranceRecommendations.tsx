@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import '../styles/fragrance-rec.css';
 import type { CurationResult } from '../types'
 import { ProductVisual } from './ProductVisual'
 
@@ -48,8 +49,13 @@ export function FragranceRecommendations({
   if (!curation && !error) return null
 
   return (
-    <section className="panel" aria-live="polite">
-      <h2>Skin Retention Profile &amp; Fragrance Curation</h2>
+    <section className="panel curation-panel-highlight" aria-live="polite">
+      <div className="section-title-row">
+        <h2>Skin Retention Profile &amp; Fragrance Curation</h2>
+        <span className="curation-hero-badge">
+          ✦ Chosen by Your Skin
+        </span>
+      </div>
       <p className="note">
         Formulation heuristic based on your YouCam skin metrics and scent
         preference. For cosmetic and fragrance shopping guidance only, not a
